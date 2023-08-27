@@ -1,0 +1,15 @@
+image:
+  file: .docker/gitpod/Dockerfile
+
+vscode:
+  extensions:
+    - leanprover.lean4
+
+tasks:
+  - init: |
+      lake exe cache get
+
+  # Append to .bashrc so that every new shell can find our source control scripts in the path
+    command: |
+      echo 'export PATH=${PATH}:/workspace/ProofLab4/scripts' >> ${HOME}/.bashrc
+      export PATH=${PATH}:/workspace/ProofLab4/scripts
