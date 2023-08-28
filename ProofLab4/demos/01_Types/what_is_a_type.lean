@@ -55,6 +55,7 @@ def my_term₈ : Unit ⊕ ℕ ⊕ ℕ × ℕ  := sorry
 
 def my_term₉ : List ℕ := sorry 
 
+def my_term₁₀ : List ℕ × ℕ := sorry
 
 
 /- We are given a term `t : `. Produce a term of type ℤ, depending on `t`, using a projection of `t`.  -/
