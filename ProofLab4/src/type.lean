@@ -21,14 +21,15 @@ In Lean things are largely organized as __types__ (collections) and __terms__ (e
 Some familiar number systems such as __natural numbers (ℕ)__ , __integers (ℤ)__, __rational numbers (ℚ)__, and __real numbers (ℝ)__ are encoded as types in Lean. (Lean's "check" command tells us the type of the object we have constructd). 
 -/
 
-#check Nat -- the type of __natural numbers__
+/- The lean command `check` tells you the type of any well-defined object in Lean -/
+#check Nat -- the type of __natural numbers__ 
 #check ℕ -- (ℕ is a special symbol typed by ℕ or \nat )
 
 #check Int -- the type of __integers__ 
 #check ℤ -- (ℤ is a special symbol typed by \Z or \int)
 
 #check Rat  -- the type of __rationals__
-#check ℚ -- (ℚ is a special symbol typed by \Q or \rat)
+#check ℚ -- (ℚ is a special symbol typed by \Q or \rat) `ℚ : Type` means "ℚ is a type".
 
 #check Real -- the type of __real numbers__
 #check ℝ -- (ℝ is a special symbol typed by \R or \real)
@@ -38,9 +39,24 @@ Some familiar number systems such as __natural numbers (ℕ)__ , __integers (ℤ
 All types, except the __empty__ type, have __terms__ (or elements, or inhabitants). For instance `0 : ℕ`. We read the expression `a : A` as `a is an A`. So `0 : ℕ` says `0 is a natural number`, and `0 : ℤ` says that `0 is an integer`.
 -/  
 
+#check 0 -- `0` is a natural number 
+
+/- 
+In Lean, like any type theory, every term has a unique type. 
+-/
+
+#check (0 : ℤ) -- coercion -- forcing `0` to be understood as an integer rather than a natual number. 
+
+#check (0 : ℚ)
+
+#check 0.0  -- the primitive type for digit numbers is Float 
+
+#check (0.0 : ℝ) -- we can coerce floats to real numbers. 
+
+
 #check Empty -- the empty type  does not have any terms: we cannot find any `a` such that `a : Empty`. 
 
- 
+
 
 #check Bool -- the type of __booleans__: there are two terms in this type `true` and `false`. 
 #check true
@@ -56,26 +72,49 @@ All types, except the __empty__ type, have __terms__ (or elements, or inhabitant
 #check 2
 #check (2 : ℝ)
 
-#check (2 : ℤ) + 3 
+
+#check 2 
+#check 3 
+
+#check 2 + 3 -- Lean first parses `2` as a natural number, then understands `+` as an operation between natural numbers and think `3` must be natual number. 
+
+#check (-1) + 3 -- `3` is understood as an integer. 
+#check 3 + (-1) -- unification 
+
+
+#check (2 : ℤ) + 3 -- `2 + 3 : ℤ` says that `2 + 3` is an integer.  
 #check 2 + (3 : ℤ)
 
 #eval 2 + (3 : ℤ) -- We can __evalute__ terms to their simplests form (the so called __canonical__ form). 
-
+#eval (2 : ℤ) + 3
 
 #check 1/2 -- since 1 and 2 are natural numbers Lean by default use the division operator between natural numbers. 
+
+#eval 1/2
+
 
 #check 1/(2:ℚ) -- we can force Lean to consider the rational numbers division. 
 
 #check (1:ℚ)/2 -- or this way 
 
+
+/- the first definition-/
 def rational_one := (1 : ℚ)
 
-#check rational_one/2
+#check rational_one
+#eval rational_one
 
+
+#check rational_one/2
+#eval rational_one/2
+
+
+/- proving a basic fact about the object `rational_one` we defined-/
 example : 
   rational_one/2 = 1/(2:ℚ) := 
-by rfl 
-
+by -- indicates to Lean this is start of the proof
+  rfl -- true by reflexivity. `rfl` proves statements of the form `a = a`. 
+      -- this is a tactic. 
 
 -- `.1` and `.2` are projections from the cartesian space `ℚ × ℚ` to `ℚ` which pick the first and second coordinates. 
 #eval (52,4).1
