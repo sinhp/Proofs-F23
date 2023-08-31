@@ -21,7 +21,13 @@ In Lean things are largely organized as __types__ (collections) and __terms__ (e
 Some familiar number systems such as __natural numbers (ℕ)__ , __integers (ℤ)__, __rational numbers (ℚ)__, and __real numbers (ℝ)__ are encoded as types in Lean. (Lean's "check" command tells us the type of the object we have constructd). 
 -/
 
-/- The lean command `check` tells you the type of any well-defined object in Lean -/
+/- 
+The lean command `check` tells you the type of any well-defined object in Lean.  
+
+`#check <expression>` tells us what kind of thing `<expression>` is.
+-/
+
+
 #check Nat -- the type of __natural numbers__ 
 #check ℕ -- (ℕ is a special symbol typed by ℕ or \nat )
 
@@ -42,7 +48,7 @@ All types, except the __empty__ type, have __terms__ (or elements, or inhabitant
 #check 0 -- `0` is a natural number 
 
 /- 
-In Lean, like any type theory, every term has a unique type. 
+In Lean, like any type theory, every term has a unique type. Therefore the term/element `0` of `ℕ` is different that `0` as a term of `ℤ`. 
 -/
 
 #check (0 : ℤ) -- coercion -- forcing `0` to be understood as an integer rather than a natual number. 
@@ -129,37 +135,101 @@ by -- indicates to Lean this is start of the proof
 In below we shall see some new types constructed from the old ones; we shall also see what the terms of these new types are. 
 -/
 
+/- 
+`x : A` -- x is an A
+`2 : ℕ` -- 2 is a natural number 
+`Langyi : Human` -- Langyi is a human 
+`Sunday : Weekday` 
+`A : Type` -- A is a type. -- This means we should have a type `Type`. Indeed we do and this is the type of all small types.  (Russell-Girard Paradox )
+
+-/
+
+variable (n : ℕ) -- a variable n is a generic natural number.  
+
+
+example : 1 + 1 = 2 * 1 := 
+by 
+ rfl 
+
+/- the statement below is a generalization of the above for all natural numbers. And the proof can not be as simple. -/
+-- example : n + n = 2 * n := 
+-- by 
+--   rfl
+
+-- #check Sunday
+-- #check Human 
 
 section 
 variable {A B : Type} -- Suppose `A` and `B` are types. We do not know anything about types `A` and `B` except the fact that they are types. We don't even know if they have any terms. 
 
 /- The type of __pairs__: The terms of `A × B` are pairs `(a , b)` where `a : A` and `b : B`. Therefore, if `a : A` and `b : B` then  `(a , b) : A × B`.  -/
 
+#check Prod A B 
 #check A × B 
 
+/-
+
+A : Type    B: Type 
+-------------------
+    A × B : Type 
+
+The typical terms of the product type. 
+
+a : A       b : B
+------------------ 
+  (a, b) : A × B 
+-/
 end 
 
 
 
-#check ℕ × ℕ 
+#check ℕ × ℕ -- the terms of  ℕ × ℕ are pairs of natural numbers. 
 #check (1 , 2)  -- round brackets for tuples
 
 #check ℕ × ℤ 
 #check (1 , (2 : ℤ))
 #check ((2 : ℤ) , 1)
+#check (1, -2)
 
 #check ((1 : ℝ), (-1 : ℝ))
 #check ((1 , -1) : ℝ × ℝ)
 
+/-
+A : Type   B : Type   C : Type
+------------------------------
+   A × B : Type       C : Type 
+------------------------------
+         (A × B) × C : Type 
+
+
+A : Type   B : Type   C : Type
+------------------------------
+A : Type       B × C : Type 
+------------------------------
+     (A × B) × C : Type 
+-/
+
 
 #check (1 , (2 , 3))
+#check ((1, 2), 3)
 #check (1 , 2 , 3) 
+
+example : (1 , 2 , 3) =  (1, (2, 3)) := 
+by 
+  rfl 
+
+
+-- example : (1 , 2 , 3) ≠  ((1, 2), 3) := 
+-- by 
+--   sorry
+
 
 
 /-
 ⊢ ℚ × ℚ
 -/
 #check ((2.2 : ℚ), (1.7 : ℚ))
+
 /-
 ⊢ Float × Float
 -/
@@ -192,6 +262,9 @@ end
 
 #check [0,2,5] -- Lean infers the type of the list `[0,2,5]`. How? 
 #check [2,0,5] -- this is a different list than the one above
+
+#check [2 , -3 ]
+#check ([] : List ℝ)
 
 #check ([1, 2, 3] : List ℤ)  
 
@@ -236,7 +309,26 @@ section
 variable {A B : Type}
 #check A ⊕ B  -- The __sum__ type of `A` and `B`: write ⊕ using \oplus or \o+
 
--- Terms of `A ⊕ B` are of the form `Sum.inl a` for some `a : A` or `Sum.inr b` for some `b : B`.   
+-- Terms of `A ⊕ B` are of the form `Sum.inl a` for some `a : A` or `Sum.inr b` for some `b : B`.  
+
+
+/-
+
+A : Type      B : Type 
+----------------------
+    A ⊕ B : Type
+
+a : A    b : B
+---------------
+Sum.inl a : A ⊕ B
+
+a : A    b : B
+---------------
+Sum.inr b : A ⊕ B
+-/
+
+
+
 end 
 
 
