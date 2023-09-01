@@ -51,13 +51,13 @@ All types, except the __empty__ type, have __terms__ (or elements, or inhabitant
 In Lean, like any type theory, every term has a unique type. Therefore the term/element `0` of `ℕ` is different that `0` as a term of `ℤ`. 
 -/
 
-#check (0 : ℤ) -- coercion -- forcing `0` to be understood as an integer rather than a natual number. 
+#check (0 : ℤ) -- casting; we force `0` to be understood as an integer rather than a natual number. 
 
-#check (0 : ℚ)
+#check (0 : ℚ) -- casting; we force `0` to be understood as a rational number rather than a natual number.
 
-#check 0.0  -- the primitive type for digit numbers is Float 
+#check 0.0  -- `0.0` is a Float.
 
-#check (0.0 : ℝ) -- we can coerce floats to real numbers. 
+#check (0.0 : ℝ) -- we can cast floats to real numbers. 
 
 
 #check Empty -- the empty type  does not have any terms: we cannot find any `a` such that `a : Empty`. 
@@ -93,6 +93,15 @@ In Lean, like any type theory, every term has a unique type. Therefore the term/
 
 #eval 2 + (3 : ℤ) -- We can __evalute__ terms to their simplests form (the so called __canonical__ form). 
 #eval (2 : ℤ) + 3
+
+/-
+So how come we didn’t have to write (2 : ℤ) + (3 : ℤ) ? The reason for this is that addition in Lean takes two terms of a type `A` and outputs a term of the same type `A`, so once Lean knows that the first term has type `ℤ` it figures out that all the other terms must have type `ℤ` as well for things to make sense.
+-/
+
+example : 2 + (3 : ℤ) = (2 : ℤ) + (3 : ℤ) := 
+by 
+  rfl 
+
 
 #check 1/2 -- since 1 and 2 are natural numbers Lean by default use the division operator between natural numbers. 
 
