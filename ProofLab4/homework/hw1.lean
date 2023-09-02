@@ -4,7 +4,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 open Real 
 
 /-! 
-# Homework 0 
+# Homework 1
 Homework must be done individually.
 -/
 

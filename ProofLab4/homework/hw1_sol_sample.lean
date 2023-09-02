@@ -4,8 +4,14 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 open Real 
 
 
+
 /-
-# Solutions to Problem 1 
+# Sample Solutions to HW1
+-/
+
+
+/-
+## Solutions to Problem 1 
 -/
 
 /-
@@ -17,7 +23,7 @@ open Real
 
 
 /-
-# Solutions to Problem 2 
+## Solutions to Problem 2 
 -/
 
 /-
@@ -36,7 +42,7 @@ by
 
 
 /-
-# Solutions to Problem 3
+## Solutions to Problem 3
 -/
 
 def my_term₁ : List (Unit ⊕ ℕ) := [Sum.inr 1, Sum.inl ()]
