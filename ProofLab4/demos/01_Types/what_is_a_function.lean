@@ -144,6 +144,10 @@ def half_neg_rat_alt := fun (n : ℤ) => (-n : ℚ)/2
 #reduce Nat.add
 
 
+def my_add : ℕ × ℕ → ℕ := 
+fun (a, b) => a + b   
+
+
 def half_neg_alt := 
 -- Lean interprets `n` to be a natural number since we told it so. 
 fun n : ℕ => (-n : ℤ)/2 
@@ -313,8 +317,6 @@ def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
 
 
 
-
-
 /- The __absolute value__ function -/
 #check (abs : ℚ → ℚ)
 #check (abs : ℝ → ℝ)
@@ -323,7 +325,9 @@ def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
 #check (abs_add : ∀ a b : ℝ, abs (a + b) ≤ abs a + abs b)
 
 
-/-! Multivariable Functions (Functions of Many Arguments)  
+
+
+/-! ### Multivariable Functions (Functions of Many Arguments)  
 So far our functions take a single argument as their input, but the functions of many arguments are abound. A function of many arguments can depend on __two or more arguments__ as inputs. Most physical laws can be expressed as functions of many arguments: for instance the pressure (P) of an ideal gas is a function of its temperature (T) and volume (V). And, kinetic energy of a particle is a function of its mass and velocity.
 -/
 
@@ -352,6 +356,12 @@ fun f =>  (fun p => f p.1 p.2)
 #check uncurry
 
 
+#check uncurry Nat.add 
+
+-- #check uncurry (X := X) (Y:= Y) (Z:= Z)
+
+
+
 #check Nat.add 
 #check @Nat.add
 
@@ -360,6 +370,11 @@ fun f =>  (fun p => f p.1 p.2)
 #eval Nat.add 2 3 
 
 --#eval Nat.add (2,3)
+
+
+
+
+
 
 def cantor_function := 
 fun (m : ℕ) (n : ℕ) => (m + n) * (m + n + 1)/2 + m
@@ -390,21 +405,6 @@ def  cantor_function_uncurried := uncurry cantor_function
 
 
 
-
-
-
-
-
-#check uncurry Nat.add 
-
--- #check uncurry (X := X) (Y:= Y) (Z:= Z)
-
-
-
-
-
-
-
 /-- Conversely -/
 def curry : (X × Y → Z) → (X → (Y → Z)) :=
  fun f => fun x =>  fun y => f (x , y)
@@ -427,7 +427,10 @@ Consider the multivariable function `rational_sum_of_squares : ℚ → ℚ → �
 def rational_sum_of_squares (x y : ℚ) := 
 x^2 + y^2
 
-#check rational_sum_of_squares
+
+-- def rational_sum_of_squares_alt (p : ℚ × ℚ) := 
+-- sorry 
+
 
 #eval rational_sum_of_squares (3/5) (4/5)
 
@@ -466,26 +469,48 @@ sorry
 
 
 
-def Fibonacci : ℕ → ℕ  
+/-! ## Functions out of inductive types 
+
+To define a function on an inductive type, we need to specify the value of the function on each constructor.
+
+For instance we already saw that to define the function `isLectureDay` on the type `Weekday` we need to specify the value of the function on each of the seven constructors of `Weekday`.
+-/ 
+
+#check isLectureDay
+
+
+/- 
+Similarly to define a function `f` out of `ℕ` we need to specify the value of `f` at `zero` and the value of `f` at `succ n` for `n : ℕ`.
+-/ 
+
+
+def fac : ℕ → ℕ
   | 0 => 1
-  | 1 => 1
-  | n + 2 => Fibonacci (n + 1) + Fibonacci n 
+  | n + 1 => (n + 1) * fac n
 
-#eval Fibonacci 5 -- infoview displays `8`  
-
+#eval fac 4 -- 24
 
 
 
-/- Suppose we have a type `β` and a decision function `d : β → bool`. Define a function `β → ℕ` which takes a `b : β` and returns `0` if `d b = false` and `1` if `d b = true`.     -/
+/-
+Puzzle: define a function `fibonacci : ℕ → ℕ` which takes a natural number `n` as input and returns the `n`th Fibonacci number.
+-/
 
-variable {β : Type} {d : β → Bool}
 
-def nat_of_bool_decision (b : β) : ℕ :=
-  match d b with
-  | true  => 0
-  | false => 1
 
-#check nat_of_bool_decision
+
+
+/- Suppose we have a type `X` and a decision function `d : X → bool`. Define a function `X → ℕ` which takes a `x : X` and returns `0` if `d x = false` and `1` if `d x = true`.     -/
+
+variable {X : Type} {d : X → Bool}
+
+-- def nat_of_bool_decision 
+
+
+
+
+
+/-! ## Composition of Functions -/
 
 
 def Compose (g : Y → Z) (f : X → Y) (x : X) : Z :=
@@ -505,3 +530,11 @@ A notation for squaring
 -/
 
 notation:1000 f "²" => Square f
+
+
+
+
+
+
+
+

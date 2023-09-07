@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 
 import ProofLab4
-
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-
 Puzzle 1 : what is the result of _evaluating_ the following expressions?
@@ -57,6 +57,8 @@ Puzzle 1 : what is the result of _evaluating_ the following expressions?
 #eval 2^7 -- ℕ  are not closed under exponentiation `^`
 
 #eval (2 : ℚ) ^ (-5 : ℤ) 
+
+-- #eval (2 : ℚ) ^ (1 : ℚ)
 
 #check -2
 
@@ -141,11 +143,96 @@ variable (B : Type u)
 
 /- Write a term of the following types: -/
 
-def my_term₁ : ℕ × ℕ := sorry 
+/- The type of cartesian product of natural numbers with itself -/
+/-  `(a, b) : A × B` where `a : A` and `b : B` -/
+def my_term₁ : ℕ × ℕ := (200, 1)
 
-def my_term₂ : ℕ × ℕ × ℕ := sorry 
+#reduce my_term₁
 
-def my_term₃ : ℕ ⊕ ℕ := sorry 
+/- giving more context -/
+def my_term_of_prod (A : Type) (B : Type) (a: A) (b : B) : A × B := 
+(a,b)
+
+#reduce my_term_of_prod
+
+/-
+
+A : Type    B: Type 
+-------------------
+    A × B : Type 
+
+ℕ    ℕ     ℕ 
+-------------------
+  ℕ × ℕ    ℕ 
+-------------------  
+    (ℕ × ℕ) × ℕ 
+
+The typical terms of the product type. 
+
+a : A       b : B
+------------------ 
+  (a, b) : A × B 
+
+p : A × B  
+---------------- (elimination/projection)
+p.1 : A   p.2 : B
+-/
+
+
+def my_pair := (3 , 3.4)
+#check my_pair
+
+#check my_pair.1
+#eval my_pair.1
+#eval my_pair.2
+
+
+/- ℕ × (Float × List ℕ) -/
+def my_triple := (3, 3.4, [1,2,3])
+
+#check my_triple.1
+#eval my_triple.1
+#check my_triple.2
+#check my_triple.2.1
+
+example : my_triple.2.1 = 3.4 := 
+by 
+ rfl 
+
+/- 
+Lean parses A × B × C as A × (B × C) by default. 
+In general (A × B) × C ≠  A × (B × C). 
+-/
+
+def my_term₂ : ℕ × (ℕ × ℕ) := 
+(2023, my_term₁)
+
+#reduce my_term₂
+
+
+def my_term₂_alt : (ℕ × ℕ) × ℕ :=  
+(my_term₁, 2023) 
+
+
+/- In general two terms belonging to two different types can never be equal. Equality makes sense within a fixed type. -/
+-- example : my_term₂ = my_term₂_alt := 
+-- by 
+--  rfl 
+
+/- unbiased triples. -/
+
+/- sum type -/
+def my_term₃ : ℕ ⊕ List ℕ := Sum.inr []
+def my_term₃_alt : ℕ ⊕ List ℤ := Sum.inl 2   
+
+
+#check ℕ ⊕ ℤ 
+
+def inclusion_of_nat : ℕ →  ℕ ⊕ List ℤ := 
+fun n => Sum.inr [n] 
+
+
+#check ℕ ⊕ ℕ 
 
 def my_term₄ : ℕ → ℕ := sorry 
 
@@ -159,7 +246,7 @@ def my_term₈ : Unit ⊕ ℕ ⊕ ℕ × ℕ  := sorry
 
 def my_term₉ : List ℕ := sorry 
 
-def my_term₁₀ : List ℕ × ℕ := sorry
+def my_term₁₀ : List ℕ  × ℕ := ([1001, 1002, 1003], 0)
 
 
 /- We are given a term `t : `. Produce a term of type ℤ, depending on `t`, using a projection of `t`.  -/

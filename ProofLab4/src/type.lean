@@ -327,12 +327,12 @@ A : Type      B : Type
 ----------------------
     A ⊕ B : Type
 
-a : A    b : B
----------------
+a : A   
+--------------- (inleft)
 Sum.inl a : A ⊕ B
 
-a : A    b : B
----------------
+b : B
+--------------- (inright )
 Sum.inr b : A ⊕ B
 -/
 
