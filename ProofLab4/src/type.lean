@@ -336,8 +336,6 @@ b : B
 Sum.inr b : A ⊕ B
 -/
 
-
-
 end 
 
 

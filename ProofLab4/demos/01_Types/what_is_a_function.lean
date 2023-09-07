@@ -10,8 +10,6 @@ open Real -- opening namespace.
 
 
 
-variable {A B C X Y Z U V W : Type} -- "Let A B ... W be types". We are introducing types A ... W right at the start so that we do not have to repeat ourselves for each example/lemma/theorem context declration. 
-
 
 /-! # Functions -/ 
 
@@ -26,7 +24,7 @@ variable {A B C X Y Z U V W : Type} -- "Let A B ... W be types". We are introduc
 
 
 /-- Takes a natural number and returns the next/successor one.  -/
-def succ := fun (n : ℕ) => n + 1 
+def succ := fun (n : ℕ) => n + 1  -- fun (n : ℕ) => n + 1
 
 
 def succ_alt := fun n => n + 1
@@ -56,7 +54,7 @@ fun (n : ℕ) => 2 * n
 #eval double 20
 
 #check ℕ × ℕ 
-#check A × B
+-- #check A × B
 
 
 /-
@@ -77,7 +75,6 @@ fun n => 2 * n : ℕ → ℕ
 -/
 
 
-#check A → B 
 
 
 /- Puzzle: define a function `ℕ → ℚ` which takes a natural number and halves it. -/
@@ -194,10 +191,15 @@ A       B
 /- The __second way (non-lambda way) to specify functions__: no `fun` and no `=>` 
 -/ 
 
+/- `:=` for definition  -/
+def succ_alt_alt (n : ℕ) :=  n + 1
+
+
+#check @succ_alt_alt
 
 def double' (n : ℕ) := 
 2 * n
-#check double'
+#check @double'
 #reduce double'
 
 
@@ -215,9 +217,18 @@ def square (n : ℕ) := n * n
 #eval square 3
 
 
-/- All functions in Lean are __total__ which means they must return an output for each input of the domain. For instance think of taking the square root of a real number. In standard mathematics textbooks, this is only possible if the argument (i.e. what goes under √) is nonnegative. -/
+/- All functions in Lean are __total__/__exhaustive__ which means they must return an output for each input of the domain. For instance think of taking the square root of a real number. In standard mathematics textbooks, this is only possible if the argument (i.e. what goes under √) is nonnegative. -/
 
-#check sqrt 
+#check @sqrt  -- the square root function is defined in Mathlib. -- √ x = a means a * a = x. Because a * a = x is nonnegative for all a, the square root function is only defined for nonnegative real numbers. Therefore, it does not make sense to write √ -9. 
+
+-- `x ↦ √ x` has the type of input ℝ≥0  and output ℝ?  √ 2 is not a rational number.
+
+/- exercise: proving in Lean that √ 2  is not a natural number because 1 < √ 2 < 2 -/
+
+/- x= √ 2 then by definition x^2 = 2. It follows that 1 < x otherwise x^2 ≤ 1 which is not true since x^2 = 2.   
+
+√ -1 = i 
+-/
 
 noncomputable 
 example (n : ℕ): sqrt (square n) = n := 
@@ -274,13 +285,11 @@ inductive Weekend where
 def isLectureDay : Weekday →  Bool 
 | Weekday.Tuesday => true
 | Weekday.Thursday => true
-| _ => false     -- _ means whatever the other days as input 
+| _ => false     -- _ means anything else (aka otherwise. sometimes in math textbooks people write o.w.)
 
 
 #check @isLectureDay
-
-
-
+#eval isLectureDay Weekday.Tuesday
 
 def switch : Bool → Bool  
 | true => false
@@ -302,11 +311,46 @@ def nat_of_bool : Bool → ℕ
 --#eval nat_of_bool ff
 
 
+/- Suppose we have a type `X` and a decision function `d : X → bool`. Define a function `X → ℕ` which takes a `x : X` and returns `0` if `d x = false` and `1` if `d x = true`.     -/
+
+
+section 
+variable {X : Type} {d : X → Bool}
+
+-- def nat_of_bool_decision 
+end 
+
 
 /- __if ... then ... else ...__ style of definition -/
 
+/- define a function `bool_of_nat : ℕ → bool` which takes a natural number `n` as input and returns `true` if `n` is positive and `false` if `n` is zero. -/
 def bool_of_nat (n : ℕ) := 
 if n = 0 then false else true
+
+
+def bool_of_nat_alt : ℕ → Bool 
+| 0 => false
+| _ =>  true
+
+
+/- define a function which takes even numbers to `0` and odd numbers to `1`-/
+
+
+#check Even 
+#check Odd
+
+/- figure it out later -/
+-- def even_odd : ℕ → Bool 
+-- | Even (n) => 0
+-- | Odd (n) => 1
+
+
+def even_odd (n : ℕ) := 
+if (Even n) then true else false
+
+
+#eval even_odd 1009
+
 
 -- #check bool_of_nat
 
@@ -411,7 +455,6 @@ def curry : (X × Y → Z) → (X → (Y → Z)) :=
 
 #check curry
 #check @curry
-#check @curry X Y Z
 
 
 -- the type of the uncurried `kinetic_energy` 
@@ -459,8 +502,8 @@ p.2
 
 /- Define a function `distance_rat : ℚ → ℚ → ℚ` which takes two rational numbers `x : ℚ ` and `y : ℚ ` as inputs and returns as output the standard Euclidean distance `| x - y |` between them. 
 -/ 
-def distance_rat (x y : ℚ) := 
-sorry
+-- def distance_rat (x y : ℚ) := 
+-- sorry
 
 
 --#check distance_rat (3/2 : ℚ) (1/2 : ℚ) -- should be a rational number
@@ -483,13 +526,11 @@ For instance we already saw that to define the function `isLectureDay` on the ty
 Similarly to define a function `f` out of `ℕ` we need to specify the value of `f` at `zero` and the value of `f` at `succ n` for `n : ℕ`.
 -/ 
 
-
 def fac : ℕ → ℕ
   | 0 => 1
   | n + 1 => (n + 1) * fac n
 
 #eval fac 4 -- 24
-
 
 
 /-
@@ -498,16 +539,60 @@ Puzzle: define a function `fibonacci : ℕ → ℕ` which takes a natural number
 
 
 
+/-! ### The Principle of Induction 
+The principle of induction says that we can prove a general statement about the natural numbers by proving that the statement holds of `0` and that whenever it holds of a natural number `n`, it also holds of `n+1` . The line `induction' n with n ih` in the proof below therefore results in two goals: in the first we need to prove `0 < fac 0`, and in the second we have the added assumption `ih : 0 < fac n` and a required to prove `0 < fac (n + 1)`. 
+
+1. 
+` ⊢ 0 < fac 0`
+
+2. 
+`0 < n  ⊢  0 < fac (n + 1)` 
+
+The phrase `with n ih` serves to name the variable and the assumption for the inductive hypothesis, and you can choose whatever names you want for them.
+-/ 
+
+theorem fac_pos (n : ℕ) : 0 < fac n := by
+  induction' n with n ih
+  · rw [fac]
+    exact zero_lt_one
+  rw [fac]
+  exact mul_pos n.succ_pos ih
 
 
-/- Suppose we have a type `X` and a decision function `d : X → bool`. Define a function `X → ℕ` which takes a `x : X` and returns `0` if `d x = false` and `1` if `d x = true`.     -/
-
-variable {X : Type} {d : X → Bool}
-
--- def nat_of_bool_decision 
 
 
 
+
+
+/-- Lexicographical order on ℕ × ℕ  -/ 
+inductive LexNat : ℕ × ℕ → ℕ × ℕ → Prop where
+  | left  {a₁} (b₁) {a₂} (b₂) (h : a₁ ≤ a₂) : LexNat (a₁, b₁) (a₂, b₂)
+  | right (a) {b₁ b₂} (h : b₁ ≤ b₂)         : LexNat (a, b₁)  (a, b₂)
+
+
+#check LexNat.left
+
+
+def sum_of_lex_nat (p₁ q₁ p₂ q₂ : ℕ × ℕ) (H₁ : LexNat p q) (H₂ : LexNat p₂ q₂) : LexNat (p₁ + p₂) (q₁ + q₂)  := 
+
+
+
+
+/- 
+For instance the following is the definition of the less than or equal to relation on the natural numbers.
+-/
+
+--open Nat 
+
+
+def Nat_le : ℕ → ℕ → Prop    
+| 0 , 0   => True
+| 0 , (.succ _)   => True
+| (.succ _) , 0   => False
+| (.succ m) , (.succ n) => Nat_le m n 
+
+
+--#check Lex
 
 
 /-! ## Composition of Functions -/

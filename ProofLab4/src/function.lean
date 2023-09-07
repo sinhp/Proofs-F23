@@ -34,7 +34,7 @@ This is the so-called function __application__ (aka __evaluation__). We'll talk 
 #check ℕ 
 
 /-- Takes a natural number and returns the next/successor one.  -/
-def succ := fun (n : ℕ) => n +1 
+def my_succ := fun (n : ℕ) => n +1 
 
 
 
