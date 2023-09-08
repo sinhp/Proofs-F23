@@ -97,6 +97,18 @@ Puzzle: define a function `fibonacci : ℕ → ℕ` which takes a natural number
 -/
 
 
+#eval 2 - 3
+
+def fibonacci : ℕ → ℕ 
+  | 0 => 0
+  | (n + 1) => fibonacci (n) + fibonacci (n - 1)
+
+
+#eval fibonacci (2 - 3)
+#eval fibonacci 1
+
+
+
 
 /-! ### The Principle of Induction 
 The principle of induction says that we can prove a general statement about the natural numbers by proving that the statement holds of `0` and that whenever it holds of a natural number `n`, it also holds of `n+1` . The line `induction' n with n ih` in the proof below therefore results in two goals: in the first we need to prove `0 < fac 0`, and in the second we have the added assumption `ih : 0 < fac n` and a required to prove `0 < fac (n + 1)`. 

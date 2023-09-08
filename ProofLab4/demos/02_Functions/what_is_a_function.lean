@@ -40,22 +40,6 @@ def succ_alt := fun n => n + 1
 #eval succ 1000 -- input : 1000 , output :1001
 
 
-/--
-Let `double : ℕ → ℕ` be the function defined by `double (n) = 2 * n`:
--/ 
-def double := 
-fun (n : ℕ) => 2 * n 
--- we use the symbol `:=` for defining functions in Lean. Whatever follows `:=` is the definition of the function. 
-
-#check double 
-#check @double
-
-
-#eval double 20
-
-#check ℕ × ℕ 
--- #check A × B
-
 
 /-
 A : Type    B: Type
@@ -68,11 +52,25 @@ a : A |- f(a) : B
 fun a => f a : A → B
 
 
+Example: 
 n : ℕ  ∣- 2 * n : ℕ 
 ---------------------
 fun n => 2 * n : ℕ → ℕ  
-
 -/
+
+
+/--
+Let `double : ℕ → ℕ` be the function defined by `double (n) = 2 * n`:
+-/ 
+def double := 
+fun (n : ℕ) => 2 * n 
+-- we use the symbol `:=` for defining functions in Lean. Whatever follows `:=` is the definition of the function. 
+
+#check double 
+#check @double
+
+
+#eval double 20
 
 
 
@@ -300,8 +298,6 @@ def switch : Bool → Bool
 #eval switch false
 
 
-
-
 def nat_of_bool : Bool → ℕ 
 | false => 0 
 | true => 1 
@@ -367,55 +363,6 @@ def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
 #check abs (-3 : ℚ)
 #eval abs (-3 : ℚ)
 #check (abs_add : ∀ a b : ℝ, abs (a + b) ≤ abs a + abs b)
-
-
-
-
-/-! ### Multivariable Functions (Functions of Many Arguments)  
-So far our functions take a single argument as their input, but the functions of many arguments are abound. A function of many arguments can depend on __two or more arguments__ as inputs. Most physical laws can be expressed as functions of many arguments: for instance the pressure (P) of an ideal gas is a function of its temperature (T) and volume (V). And, kinetic energy of a particle is a function of its mass and velocity.
--/
-
-def kinetic_energy (m : ℝ) (v : ℝ) := 
-(1/2 : ℚ) * m * v * v  
-
-
-/-
-puzzle: guess the type of `kinetic_energy`
--/
-#check kinetic_energy
-
-#reduce dom (kinetic_energy)
-#reduce cod (kinetic_energy)
-
-/- 
-Suppose `f` is a multivariable function  which assigns to elements 
-`a : A` and `b : B` an element `f a b : C`. 
-Since we have the operation of cartesian product on sets we can in fact construct from  `f` a single variable function from the cartesian `A × B` to `C`. 
-
-This insight is originally due to the logician and mathematician Frege then later discovered by Schönfinkel, but and again a century later by Haskell Curry.  
--/
-
-def uncurry : (X → Y → Z) → (X × Y → Z) := 
-fun f =>  (fun p => f p.1 p.2)
-#check uncurry
-
-
-#check uncurry Nat.add 
-
--- #check uncurry (X := X) (Y:= Y) (Z:= Z)
-
-
-
-#check Nat.add 
-#check @Nat.add
-
-#check Nat.add 2 -- This is a function which takes a natural number and adds `2` to it. 
-
-#eval Nat.add 2 3 
-
---#eval Nat.add (2,3)
-
-
 
 
 

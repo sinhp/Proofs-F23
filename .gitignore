@@ -3,4 +3,7 @@
 /lake-packages
 /.cache
 .DS_Store
+/ProofLab4/demos/*/*_sina.lean
 /ProofLab4/homework/*_sina.lean
+/ProofLab4/src/*/*_sina.lean
+/ProofLab4/src/*_sina.lean

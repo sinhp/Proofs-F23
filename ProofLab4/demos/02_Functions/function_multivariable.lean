@@ -16,6 +16,50 @@ open Real -- opening namespace.
 So far our functions take a single argument as their input, but the functions of many arguments are abound. A function of many arguments can depend on __two or more arguments__ as inputs. Most physical laws can be expressed as functions of many arguments: for instance the pressure (P) of an ideal gas is a function of its temperature (T) and volume (V). And, kinetic energy of a particle is a function of its mass and velocity.
 -/
 
+
+
+/-
+puzzle: guess the type of `kinetic_energy`
+-/
+#check kinetic_energy 
+
+#reduce dom (kinetic_energy)
+#reduce cod (kinetic_energy)
+
+/- 
+Suppose `f` is a multivariable function  which assigns to elements 
+`a : A` and `b : B` an element `f a b : C`. 
+
+This is represented in Lean by `f : A → B → C`. Lean parses the type as `A → (B → C)`.  This means for every `a : A`, we get a function `f a : B → C`. If we further feed an input `b : B` to the function `f a : B → C` then we obtain an element `f a b : C`. s  
+-/ 
+
+
+
+
+/-
+Since we have the operation of cartesian product on sets we can in fact construct from  `f` a single variable function from the cartesian `A × B` to `C`. 
+
+This insight is originally due to the logician and mathematician Frege then later discovered by Schönfinkel, but and again a century later by Haskell Curry.  
+-/
+
+
+#check uncurry
+
+#check uncurry Nat.add 
+
+-- #check uncurry (X := X) (Y:= Y) (Z:= Z)
+
+
+
+#check Nat.add 
+#check @Nat.add
+
+#check Nat.add 2 -- This is a function which takes a natural number and adds `2` to it. 
+
+#eval Nat.add 2 3 
+
+--#eval Nat.add (2,3)
+
 #check kinetic_energy 
 
 /-
@@ -26,13 +70,7 @@ puzzle: guess the type of `kinetic_energy`
 #reduce dom (kinetic_energy)
 #reduce cod (kinetic_energy)
 
-/- 
-Suppose `f` is a multivariable function  which assigns to elements 
-`a : A` and `b : B` an element `f a b : C`. 
-Since we have the operation of cartesian product on sets we can in fact construct from  `f` a single variable function from the cartesian `A × B` to `C`. 
 
-This insight is originally due to the logician and mathematician Frege then later discovered by Schönfinkel, but and again a century later by Haskell Curry.  
--/
 
 def uncurry : (X → Y → Z) → (X × Y → Z) := 
 fun f =>  (fun p => f p.1 p.2)

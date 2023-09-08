@@ -166,7 +166,7 @@ fun n => n
 #check (abs_add : ∀ a b : ℝ, abs (a + b) ≤ abs a + abs b)
 
 
-/-! Multivariable Functions (Functions of Many Arguments)  
+/-! ### Multivariable Functions (Functions of Many Arguments)  
 
 So far our functions take a single argument as their input, but the functions of many arguments are abound. A function of many arguments can depend on __two or more arguments__ as inputs. Most physical laws can be expressed as functions of many arguments: for instance the pressure (P) of an ideal gas is a function of its temperature (T) and volume (V). And, kinetic energy of a particle is a function of its mass and velocity.
 -/
