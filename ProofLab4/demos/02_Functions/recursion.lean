@@ -85,7 +85,7 @@ Let's do all the permutations of 1 2 3 4
                           
 -/
 
-def fac : ℕ → ℤ 
+def fac : ℕ → ℕ 
   | 0 => 1
   | (n + 1) => (n + 1) * fac n
 
@@ -154,7 +154,7 @@ inductive LexNat : ℕ × ℕ → ℕ × ℕ → Prop where
 #check LexNat.left
 
 
-def sum_of_lex_nat (p₁ q₁ p₂ q₂ : ℕ × ℕ) (H₁ : LexNat p q) (H₂ : LexNat p₂ q₂) : LexNat (p₁ + p₂) (q₁ + q₂)  := 
+-- def sum_of_lex_nat (p₁ q₁ p₂ q₂ : ℕ × ℕ) (H₁ : LexNat p q) (H₂ : LexNat p₂ q₂) : LexNat (p₁ + p₂) (q₁ + q₂)  := 
 
 
 
@@ -163,16 +163,72 @@ def sum_of_lex_nat (p₁ q₁ p₂ q₂ : ℕ × ℕ) (H₁ : LexNat p q) (H₂ 
 For instance the following is the definition of the less than or equal to relation on the natural numbers.
 -/
 
---open Nat 
+def nat_le : ℕ → ℕ → Prop    
+  | 0 , 0   => True
+  | 0 , (Nat.succ _)   => True
+  | (Nat.succ _) , 0   => False
+  | (Nat.succ m) , (Nat.succ n) => nat_le m n 
 
 
-def Nat_le : ℕ → ℕ → Prop    
-| 0 , 0   => True
-| 0 , (.succ _)   => True
-| (.succ _) , 0   => False
-| (.succ m) , (.succ n) => Nat_le m n 
+#check nat_le 2 3 
+-- #eval nat_le 2 3 
 
+#check Nat.le
 
 --#check Lex
 
 
+def diff_square : ℕ → ℕ → ℤ  := 
+fun (m n : ℕ) => |(m:ℤ)^2 - (n:ℤ)^2| 
+
+
+#eval diff_square  5 4 
+#eval diff_square  6 4
+#eval diff_square  4 5
+
+
+#check Prime 21
+
+
+#check Nat.div_lt_self'
+
+
+/- currently the code below does not work since it was copied from Lean 3.-/
+
+/- wellfounded recursion-/
+def lg : ℕ → ℕ
+| 0 =>  0
+| (x + 1) => 
+  have ( (x + 1) / 2) < (x + 1) :=  Nat.div_lt_self' x 0
+    1 + lg ((x + 1)/2)
+
+-- #check lg 
+
+-- #eval lg 3
+
+
+
+/-
+In below we define the structure of pythagorean triples: 
+
+-/
+
+
+
+
+
+
+
+#check 
+
+
+
+
+#check Quot.lift
+
+
+/- 
+We want to define the floor function. Given a rational number `q = [(r,s)]` there is a unique integer which is smaller than `q`. 
+
+-/
+-- def floor : ℚ → ℤ :=  Quot.lift 

@@ -214,7 +214,6 @@ def curry : (X × Y → Z) → (X → (Y → Z)) :=
 Consider the multivariable function `rational_sum_of_squares : ℚ → ℚ → ℚ` defined by `g x y  = x^2 + y^2`.
 -/
 
-
 def rational_sum_of_squares (x y : ℚ) := 
 x^2 + y^2
 

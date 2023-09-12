@@ -2,8 +2,7 @@
 Copyright (c) 2023 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-
-import Mathlib.Data.Real.Basic -- in this file in Mathlib the real numbers are defined. 
+import ProofLab4
 import Mathlib.Data.Real.Sqrt -- this file defines the square root of a real number. 
 
 open Real -- opening namespace. 
@@ -367,47 +366,6 @@ def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
 
 
 
-def cantor_function := 
-fun (m : ℕ) (n : ℕ) => (m + n) * (m + n + 1)/2 + m
-
-#check cantor_function 0 
--- #eval cantor_function 0 
-
-#check cantor_function 0 
-
-#eval cantor_function 0 0 --0
-
-#eval cantor_function 0 1 --1 
-#eval cantor_function 1 0 --2
-
-#eval cantor_function 0 2 --3
-#eval cantor_function 1 1 --4
-#eval cantor_function 2 0 --5
-
-#eval cantor_function 0 3 --6
-#eval cantor_function 1 2 --7
-#eval cantor_function 2 1 --8 
-#eval cantor_function 3 0 --9 
-
-def  cantor_function_uncurried := uncurry cantor_function 
-
-#eval cantor_function_uncurried (1,1)
-
-
-
-
-/-- Conversely -/
-def curry : (X × Y → Z) → (X → (Y → Z)) :=
- fun f => fun x =>  fun y => f (x , y)
-
-#check curry
-#check @curry
-
-
--- the type of the uncurried `kinetic_energy` 
-#check uncurry kinetic_energy
-
-
 
 /-
 Consider the multivariable function `rational_sum_of_squares : ℚ → ℚ → ℚ` defined by `g x y  = x^2 + y^2`.
@@ -459,109 +417,9 @@ p.2
 
 
 
-/-! ## Functions out of inductive types 
-
-To define a function on an inductive type, we need to specify the value of the function on each constructor.
-
-For instance we already saw that to define the function `isLectureDay` on the type `Weekday` we need to specify the value of the function on each of the seven constructors of `Weekday`.
--/ 
-
-#check isLectureDay
-
-
-/- 
-Similarly to define a function `f` out of `ℕ` we need to specify the value of `f` at `zero` and the value of `f` at `succ n` for `n : ℕ`.
--/ 
-
-def fac : ℕ → ℕ
-  | 0 => 1
-  | n + 1 => (n + 1) * fac n
-
-#eval fac 4 -- 24
-
-
-/-
-Puzzle: define a function `fibonacci : ℕ → ℕ` which takes a natural number `n` as input and returns the `n`th Fibonacci number.
--/
 
 
 
-/-! ### The Principle of Induction 
-The principle of induction says that we can prove a general statement about the natural numbers by proving that the statement holds of `0` and that whenever it holds of a natural number `n`, it also holds of `n+1` . The line `induction' n with n ih` in the proof below therefore results in two goals: in the first we need to prove `0 < fac 0`, and in the second we have the added assumption `ih : 0 < fac n` and a required to prove `0 < fac (n + 1)`. 
-
-1. 
-` ⊢ 0 < fac 0`
-
-2. 
-`0 < n  ⊢  0 < fac (n + 1)` 
-
-The phrase `with n ih` serves to name the variable and the assumption for the inductive hypothesis, and you can choose whatever names you want for them.
--/ 
-
-theorem fac_pos (n : ℕ) : 0 < fac n := by
-  induction' n with n ih
-  · rw [fac]
-    exact zero_lt_one
-  rw [fac]
-  exact mul_pos n.succ_pos ih
-
-
-
-
-
-
-
-/-- Lexicographical order on ℕ × ℕ  -/ 
-inductive LexNat : ℕ × ℕ → ℕ × ℕ → Prop where
-  | left  {a₁} (b₁) {a₂} (b₂) (h : a₁ ≤ a₂) : LexNat (a₁, b₁) (a₂, b₂)
-  | right (a) {b₁ b₂} (h : b₁ ≤ b₂)         : LexNat (a, b₁)  (a, b₂)
-
-
-#check LexNat.left
-
-
-def sum_of_lex_nat (p₁ q₁ p₂ q₂ : ℕ × ℕ) (H₁ : LexNat p q) (H₂ : LexNat p₂ q₂) : LexNat (p₁ + p₂) (q₁ + q₂)  := 
-
-
-
-
-/- 
-For instance the following is the definition of the less than or equal to relation on the natural numbers.
--/
-
---open Nat 
-
-
-def Nat_le : ℕ → ℕ → Prop    
-| 0 , 0   => True
-| 0 , (.succ _)   => True
-| (.succ _) , 0   => False
-| (.succ m) , (.succ n) => Nat_le m n 
-
-
---#check Lex
-
-
-/-! ## Composition of Functions -/
-
-
-def Compose (g : Y → Z) (f : X → Y) (x : X) : Z :=
-  g (f x)
-
-
-/-
-We define the operation of __squaring__ a function using `compose`:
--/
-
-def Square (f : X → X) : X → X :=
-  Compose f f
-
-
-/-
-A notation for squaring
--/
-
-notation:1000 f "²" => Square f
 
 
 
