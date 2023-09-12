@@ -171,10 +171,13 @@ the type of the object we have constructd.
 -/
 
 #check P 
+-- binary __connectives__ (logical operations)
 #check P ∧ Q -- conjunction (and)
 #check P ∨ Q -- disjunction (or)
 #check P → Q -- implication (if ... then ...)
-#check ¬ P -- negation (not the case)
+
+--unary connective
+#check ¬ P -- negation (not the case P)
 
 
 /-
@@ -189,6 +192,11 @@ S3. “The sun is shining _and_ It is raining”.
 
 S3 is of the form `S1 ∧ S2`. 
 
+S4. "If the sun is shining then it raining". 
+
+S4 is of the form `S1 → S2`. 
+
+
 By combining propositin using connectives we construct more complicated propositions from simple propositions. This required us to first unquote the sentences, insert an “and” and then put a quote around the resulting sentence. We call a compound proposition (such as “The sun is shining and It is raining”) a __propositional formula__. 
 
 In this way, we can make new propositions from old propositions using __connectives__ (such as `∧`, `→`, `∨`). For each connective, we specify a __rule__  (the so-called introduction rule) to __introduce__ a proof of the compound proposition using that connective and a rule (the so-called elimination rule) to __use__ or ___eliminate__   such a proof.
@@ -202,6 +210,11 @@ In below we shall introduce the connectives `∧`, `∨`, `→`, and `¬`, and g
 - `¬` is defined using `→`: its introduction and elimination rules are similar to those of `→`. 
 -/
 
+
+/-
+Connectives (such as conjunction, disjunction, implication) for propositions are analogues of type constructors (such as cartesian product, direct sum, or function type). 
+
+-/
 
 
 /-! ### Conjunction (∧) 
@@ -319,12 +332,32 @@ This is (like) function application.
 
 
   P → Q   P 
-------------- (→ elim)
+------------- (→ elim, modus ponens)
       Q
 
 If `h` and `p` are compound expressions, we put brackets around them to make it clear where each one begins and ends. 
 e.g. `h₁ h₂ h₃` is interpreted by Lean as `(h₁ h₂) h₃`.
 -/
+
+
+example : P → P := 
+by 
+  intro hp 
+  exact hp
+
+example : (P ∧ Q) → P := 
+by 
+ intro hpq -- let P be true and then show P ∧ Q 
+ exact hpq.1
+
+
+example (h₁ : P → Q) (h₂ : P) : Q := 
+by 
+  exact h₂.2
+
+
+
+
 
 
 -- introduction example
