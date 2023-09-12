@@ -217,18 +217,7 @@ In below we define the structure of pythagorean triples:
 
 
 
-
-
-#check 
-
-
-
-
-#check Quot.lift
-
-
 /- 
 We want to define the floor function. Given a rational number `q = [(r,s)]` there is a unique integer which is smaller than `q`. 
-
 -/
 -- def floor : ℚ → ℤ :=  Quot.lift 
