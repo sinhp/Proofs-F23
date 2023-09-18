@@ -39,7 +39,7 @@ Define the following sequences in Lean:
 2. Define a sequence `b` of rational numbers where `b n = 1 / (n+1)`.
 3. Define a sequence `c` of integers where `c n = 1` when `n` is even and `c n = -1` when `n` is odd.
 4. Suppose `d : ℕ → Bool` is a sequence of Booleans. Define a sequence `e` of real numbers where `e n = 1` when `d n = true` and `e n = 0` when `d n = false`. 
-5. Define a sequence `i` of lists of integers where the `0th` term is the list `[0]` and for nonzero `n` the `nth` term is the list of divisiors of `n`. For instance, the 6th term, i.e. `i 6` is the list `[1, 2, 3, 6]`.
+5. (**Bonus**) Define a sequence `i` of lists of integers where the `0th` term is the list `[0]`, and for nonzero `n` the `nth` term is the list of divisiors of `n`. For instance, the 6th term, i.e. `i 6` is the list `[1,-1, 2,-2, 3,-3, 6, -6]`.
 -/
 
 
