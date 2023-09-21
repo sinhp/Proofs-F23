@@ -39,6 +39,21 @@ variable {x y z : ℕ}
 
 #check (x < 2) ∧ (y < x) -- `∧` means `and` and is a __connective__ which makes a compund proposition.
 
+#check x ≤ 2 -- x < 2 or x = 2 is a compund proposition 
+
+
+#check x ∣ y -- x divides y is a proposition 
+#check ∀ x y : ℤ, x ∣ y ∧ y ∣ x → x = y   
+#check ∀ x : ℝ, 0 ≤ x → abs x = x
+#check ∀ x : ℕ, ∃ y : ℕ,  x < y
+#check ∃ x : ℕ, ∀ y : ℕ,  x < y
+#check 2 + 2 < 5 ∧ (isOne 3 = "no")
+
+-- note that we checked that these are well-formed propositions, we did not say anything about their truth.
+end -- of section 
+
+
+
 
 
 #eval (3,4).2
@@ -96,34 +111,75 @@ by
 
 
 
+example : 
+  False → False := 
+by -- I start my tactic proof 
+  /-
+  We want to prove an implication therefoe we assume a hypothetical proof of `False` and try to prove the goal (i.e. `False`)
+  -/
+  intro hf 
+  exact hf -- just copying the assumption 
+
+
+example : 
+  False → False := 
+by 
+  intro hf 
+  assumption'  
+
+
+/-
+False
+--- 
+P
+-/
+
+example (P : Prop) : 
+  False → P := 
+by 
+  intro hf 
+  exfalso 
+  assumption 
+
+
 -- Depenedent Modus Ponens
 -- Want to prove that if `P` then if `P implies that P implies Q` then `Q`. 
 lemma dep_modus_ponens: 
   P → ((P → P → Q) → Q) :=
 by 
   intro hp 
-  intro H 
-  sorry     
+  intro hppq 
+  have hpq : P → Q := hppq hp -- the elimination of implication      
+  exact hpq hp
+
+
+lemma dep_modus_ponens_alt: 
+  P → ((P → P → Q) → Q) :=
+by 
+  intro hp hppq 
+  exact hppq hp hp -- binding left to right 
+
+
+example (h : A → B) (ha :  A) : B := 
+by 
+  exact h ha
+
+
+example (h : A → B) (ha :  A) : B := 
+by 
+  apply h -- backward 
+  exact ha
+
+lemma dep_modus_ponens_alt_alt: 
+  P → ((P → P → Q) → Q) :=
+by 
+  intro hp hppq 
+  apply hppq 
+  exact hp 
+  exact hp
 
 
 
-
-
-
-
-#check x ≤ 2 -- x < 2 or x = 2 is a compund proposition 
-
-
-#check x ∣ y -- x divides y is a proposition 
-#check ∀ x y : ℤ, x ∣ y ∧ y ∣ x → x = y   
-#check ∀ x : ℝ, 0 ≤ x → abs x = x
-#check ∀ x : ℕ, ∃ y : ℕ,  x < y
-#check ∃ x : ℕ, ∀ y : ℕ,  x < y
-#check 2 + 2 < 5 ∧ (isOne 3 = "no")
-
-
--- note that we checked that these are well-formed propositions, we did not say anything about their truth.
-end -- of section 
 
 
 /- __Equality__ -/
@@ -135,7 +191,6 @@ This proof uses the following variant of the rewrite tactic:
 `rw h₁ at h₂` (rewrites hypothesis `h₁` in the hypothesis `h₂`)
 -/
 
-#check symmetry_of_equality
 
 -- write a different proof using `rw ... at ...`. 
 example (x y z : ℝ) (h₁ : x = y) (h₂ : y = z) : 

@@ -57,6 +57,25 @@ Let's make the proof above even more compact using concataneation of tactics wit
 runs tactic `tac1` on the main goal and tactic `tac2` on each produced goal, concatenating all goals produced by `tac2`.
 -/ 
 
+example : P ∧ Q → Q ∧ P := by 
+  intro hpq 
+  constructor 
+  · exact hpq.2
+  · exact hpq.1
+
+
+example : P ∧ Q → Q ∧ P := by 
+  intro hpq 
+  cases hpq 
+  constructor <;> assumption
+
+
+example : P ∧ Q → Q ∧ P := by 
+  intro hpq 
+  obtain ⟨hp, hq⟩ := hpq 
+  constructor <;> assumption
+
+
 example (hp : P) (hq : Q) (hr : R) : 
   (P ∧ Q) ∧ (P ∧ R) :=
 by
@@ -93,7 +112,7 @@ this is very much like apply; it changes the goal to the assumption of the impli
 example 
   : (P → Q) → (¬Q → ¬P) := 
 by 
-  intros hpq hnq hp
+  intro hpq hnq hp
   suffices hq : Q from hnq hq -- `suffieces` says that we only need to prove `hq : Q` becasue once we do that we can apply `hnq : ¬Q` to `hq` to get a proof of `False`. 
   apply hpq
   exact hp

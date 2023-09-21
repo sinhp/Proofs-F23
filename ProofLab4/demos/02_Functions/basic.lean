@@ -58,12 +58,7 @@ fun n => 2 * n : ℕ → ℕ
 -/
 
 
-/--
-Let `double : ℕ → ℕ` be the function defined by `double (n) = 2 * n`:
--/ 
-def double := 
-fun (n : ℕ) => 2 * n 
--- we use the symbol `:=` for defining functions in Lean. Whatever follows `:=` is the definition of the function. 
+
 
 #check double 
 #check @double
@@ -76,9 +71,6 @@ fun (n : ℕ) => 2 * n
 
 /- Puzzle: define a function `ℕ → ℚ` which takes a natural number and halves it. -/
 
-
-def half := 
-fun (n : ℕ) => ((n : ℚ) /2)
 
 #check @half
 #eval half 1
@@ -108,7 +100,7 @@ fun (n : ℚ) => n/2
 
 
 -- Lean interprets `n` to be an integer (the default way)
-def half_neg := fun n => (-n : ℤ)/2  -- this is taking the floor of (-n : ℤ)/2
+
 
 #check @half_neg
 
@@ -142,18 +134,10 @@ def my_add : ℕ × ℕ → ℕ :=
 fun (a, b) => a + b   
 
 
-def half_neg_alt := 
--- Lean interprets `n` to be a natural number since we told it so. 
-fun n : ℕ => (-n : ℤ)/2 
-
 
 #check half_neg
 
 
-
-/- The __domain__ and __codomain__ functions -/
-def dom (f : A → B) := A -- `A` is the type of the inputs of `f`
-def cod (f : A → B) := B --`B` is the type of the outputs of `f`
 
 #check dom
 #check @dom -- `dom` is a term of the type `(A → B) → Type`
@@ -194,13 +178,11 @@ def succ_alt_alt (n : ℕ) :=  n + 1
 
 #check @succ_alt_alt
 
-def double' (n : ℕ) := 
-2 * n
+
 #check @double'
 #reduce double'
 
 
-def double_alt (n : ℕ) := n + n 
 -- syntactically this function is different than `double` and `double'`.
 -- #check double_alt 
 
@@ -208,7 +190,6 @@ def double_alt (n : ℕ) := n + n
 /- 
 Let `square : ℕ → ℕ`  be the function defined by `square (n) = n * n`: 
 -/
-def square (n : ℕ) := n * n 
 
 #check square
 #eval square 3
@@ -288,18 +269,18 @@ def isLectureDay : Weekday →  Bool
 #check @isLectureDay
 #eval isLectureDay Weekday.Tuesday
 
-def switch : Bool → Bool  
-| true => false
-| false => true
+-- def switch : Bool → Bool  
+-- | true => false
+-- | false => true
 
 
 #check switch 
 #eval switch false
 
 
-def nat_of_bool : Bool → ℕ 
-| false => 0 
-| true => 1 
+-- def nat_of_bool : Bool → ℕ 
+-- | false => 0 
+-- | true => 1 
 
 
 #check nat_of_bool
@@ -319,8 +300,8 @@ end
 /- __if ... then ... else ...__ style of definition -/
 
 /- define a function `bool_of_nat : ℕ → bool` which takes a natural number `n` as input and returns `true` if `n` is positive and `false` if `n` is zero. -/
-def bool_of_nat (n : ℕ) := 
-if n = 0 then false else true
+-- def bool_of_nat (n : ℕ) := 
+-- if n = 0 then false else true
 
 
 def bool_of_nat_alt : ℕ → Bool 
@@ -334,13 +315,20 @@ def bool_of_nat_alt : ℕ → Bool
 #check Even 
 #check Odd
 
+
+#check !true
+
+example : !true = false  := by rfl
+
+
 /- figure it out later -/
--- def even_odd : ℕ → Bool 
--- | Even (n) => 0
--- | Odd (n) => 1
+def even_odd : ℕ → Bool 
+| 0 => true
+| 1 => false
+| (n + 1) => ¬ even_odd n 
 
 
-def even_odd (n : ℕ) := 
+def even_odd_alt (n : ℕ) := 
 if (Even n) then true else false
 
 
@@ -349,7 +337,7 @@ if (Even n) then true else false
 
 -- #check bool_of_nat
 
-def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
+-- def isOne (n : Nat) : String := if n = 1 then "yes" else "no"
 
 #check isOne
 #eval isOne 0
@@ -372,9 +360,6 @@ Consider the multivariable function `rational_sum_of_squares : ℚ → ℚ → �
 -/
 
 
-def rational_sum_of_squares (x y : ℚ) := 
-x^2 + y^2
-
 
 -- def rational_sum_of_squares_alt (p : ℚ × ℚ) := 
 -- sorry 
@@ -390,14 +375,15 @@ x^2 + y^2
 
 
 
-/-- for a pair `p`, i.e. a term of type `X × Y` the output of `fst` is the first coordinate of `p` which we access using the first projection `.1`. -/
-def fst (p : X × Y) := 
-p.1 
+/- for a pair `p`, i.e. a term of type `X × Y` the output of `fst` is the first coordinate of `p` which we access using the first projection `.1`. 
+-/
+#check fst
 
 
-/-- for a pair `p`, i.e. a term of type `X × Y` the output of `snd` is the second coordinate of `p` which we access using the second projection `.2`. -/
-def snd (p : X × Y) := 
-p.2
+/- for a pair `p`, i.e. a term of type `X × Y` the output of `snd` is the second coordinate of `p` which we access using the second projection `.2`. 
+-/
+
+#check snd
 
 
 #check curry fst

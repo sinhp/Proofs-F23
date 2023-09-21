@@ -353,7 +353,7 @@ by
 
 example (h₁ : P → Q) (h₂ : P) : Q := 
 by 
-  exact h₂.2
+  exact h₁ h₂
 
 
 

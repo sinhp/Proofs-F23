@@ -438,6 +438,9 @@ lemma or_symm_alt (h : P ∨ Q) : Q ∨ P := by
  
 
 
+
+
+
 /-! ### Tactic `exfalso` 
 
 In lecture logic.zero we prove the lemma `false_elim` which states that `False` implies any proposition `P` using the elimination principle of `False`.  There is a tactic for this: `exfalso` changes any goal at all to `False`. 
@@ -470,3 +473,19 @@ by
   contradiction
 
 
+/-! ### Tactic `specialize` -/ 
+
+example : (P → Q) → (P → Q → R) → P → R := 
+by 
+  intro hpq hpqr hp
+  specialize hpqr hp
+  specialize hpq hp
+  exact hpqr hpq
+
+
+
+/-! ### Tactic `solve_by_elim ` -/ 
+example : (P → Q) → (P → Q → R) → P → R := 
+by 
+  intro hpq hpqr hp
+  solve_by_elim  

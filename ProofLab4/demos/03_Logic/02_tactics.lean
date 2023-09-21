@@ -91,6 +91,17 @@ by
 
 /-! ### Negation -/
 
+example (P : Prop) : P ∧ ¬ P → False := 
+by 
+  intro hpnp
+  have hnp : ¬ P := hpnp.2  
+  have hp: P := hpnp.1 
+  --have hnp' : P → False := hnp 
+  apply hnp 
+  exact hp
+
+
+
 /- We proved the proposition `(P → Q) → (¬Q → ¬P)` in term-mode. Construct a tactic-mode proof of it. -/
 --#check proof_by_contrapositive
 
@@ -143,20 +154,50 @@ by
 
 
 
+/-
+          ---  
+h : P → Q  P 
+------------ ?
+ Q 
+
+ `apply h` changes the goal from `Q` to `P`, i.e. instead of proving `Q`our task is reduced to proving `P`
+-/
 
 /-! ### Tactic `apply` -/
 
+-- Proving the contrapositive of an implication 
 -- replace `sorry` with an appropriate term and uncomment the last line to complete the proof below.  
 example (P Q : Prop) : 
   (P → Q) → (¬ Q → ¬P) := 
 by 
-  intro hpq 
-  intro hnq 
-  intro hnp 
-  apply sorry
+  intro hpq -- here we assume `P → Q` is true, in other words we have a proof of it, say `hpq`.  
+  intro hnq -- assume `¬Q` is true and want to show `¬ P := P → False`.  
+  intro hnp -- to show P → False, we assume a proof of `P` and want to obtain a contradition (i.e. a proof of `False`) 
+  apply hnq -- this reduces our goal to proving `Q` since `Q` and `¬ Q` implies `False`
+  apply hpq -- this reduces our goal to proving `P` since `P` and `P → Q` implies `Q`
+  exact hnp
   --exact hpq hnp
 
 
+example (P Q : Prop) : 
+  (P → Q) → (¬ Q → ¬P) := 
+by
+  intro hpq -- here we assume `P → Q` is true, in other words we have a proof of it, say `hpq`.  
+  intro hnq -- assume `¬Q` is true and want to show `¬ P := P → False`.  
+  intro hnp -- to show P → False, we assume a proof of `P` and want to obtain a contradition (i.e. a proof of `False`) 
+  exact hnq (hpq hnp)
+
+example (g : Nat → Nat → Nat)
+        (h₁ : ∀ xq, xq ≠ 0 → g xq xq = 1)
+        (h₂ : x ≠ 0)
+        : g x x + x = 1 + x := by
+  conv =>
+    lhs
+    arg 1
+    rw [h₁]
+    case a =>
+      tactic =>
+        apply h₂
 
 -- De Morgan Laws
 
@@ -170,21 +211,7 @@ are all constructively valid.
 
 theorem deMorgin 
 (P Q :Prop): ¬ P ∨ ¬ Q → ¬ (P ∧ Q) := 
-begin 
-intro hnpq,
-cases hnpq, 
-{intro hpq,
-have hp, from and.left hpq, 
-have this, from hnpq hp, 
-exact this,
-}, 
-{
-intro hpq, 
-have hq, from and.right hpq,
-have this, from hnpq hq,
-exact this,  
-},
-end   
+sorry 
 
 
 theorem deMorgout 
@@ -197,12 +224,15 @@ begin
   {show false, from u.right v, },
 end   
 
-theorem deMorgan
-(P Q :Prop): ¬ (P ∨ Q) → ¬ P ∧ ¬ Q := 
-begin 
-sorry
-end  
+theorem deMorgan (P Q :Prop): ¬ (P ∨ Q) → ¬ P ∧ ¬ Q := 
+by 
+  intro h   
+  sorry
 
+
+#check  ((3 / 4) + 2) * 4
+example : 3 / 4 + 2 * 4 = ((3 / 4) + 2) * 4 := by 
+  rfl
 
 theorem deMorgan_classical 
 (P Q : Prop): ¬ (P ∧ Q) → ¬ P ∨ ¬ Q := 

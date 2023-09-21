@@ -38,6 +38,13 @@ by
   · exfalso; apply dnp; exact hnp 
 
 
+example : ¬ ¬ P → P := 
+by 
+  intro h
+  push_neg at h
+  trivial
+
+
 
 /-! ## Other derived classical principles of reasoning -/
 

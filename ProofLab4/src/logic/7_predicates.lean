@@ -17,6 +17,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Basic
 
+
+
+
 /- # Goals of this lecture: 
 1. Parsing quantifiers and reading their scope correctly.
 2. Identify startegies for proving a quantified sentence in mathematics based on its logical structure.
@@ -57,8 +60,23 @@ variable (x y : X)
 end 
 
 
+#check (Even : ℕ → Prop) -- The predicate of evenness on natural numbers. 
+
+
+#check Even 1 -- a proposition 
+#check Even 2 -- a proposition 
+
+#check Even 1000 -- "1000 is an even number". 
+
+
 def is_even (n : ℕ) := 
 ∃ k : ℕ, n = 2 * k 
+
+section 
+variable (n : ℕ)
+#check (∃ k : ℕ, n = 2 * k)
+end -- section 
+
 
 #check is_even 
 #check is_even 0 -- the proposition `∃ k : ℕ, 0 = 2 * k` 
@@ -285,5 +303,19 @@ by
 
 
 
+/- bad example -/
+-- example : ∃ n : ℕ, n < 1 := by 
+--   use 21
+--   norm_num 
 
 
+
+/- good example -/
+example : ∃ n : ℝ, n < 1 := by 
+  use 0
+  norm_num
+
+
+example : ∃ n : ℕ, n = n  := by 
+ use 0 
+ 

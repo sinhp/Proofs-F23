@@ -122,6 +122,7 @@ The principle of induction says that we can prove a general statement about the 
 The phrase `with n ih` serves to name the variable and the assumption for the inductive hypothesis, and you can choose whatever names you want for them.
 -/ 
 
+
 theorem fac_pos (n : ℕ) : 0 < fac n := by
   induction' n with n ih
   · rw [fac]
@@ -130,6 +131,9 @@ theorem fac_pos (n : ℕ) : 0 < fac n := by
   exact mul_pos n.succ_pos ih
 
 
+/-
+Let's test typing: i want to test typing this means i write many sentences and see if i can write everything compfortably. 
+-/
 
 
 -- The following example provides a crude lower bound for the factorial
@@ -142,6 +146,7 @@ theorem pow_two_le_fac (n : ℕ) : 2 ^ (n - 1) ≤ fac n := by
   rcases n with _ | n
   · simp [fac]
   sorry
+
 
 
 
@@ -196,28 +201,25 @@ fun (m n : ℕ) => |(m:ℤ)^2 - (n:ℤ)^2|
 /- currently the code below does not work since it was copied from Lean 3.-/
 
 /- wellfounded recursion-/
-def lg : ℕ → ℕ
-| 0 =>  0
-| (x + 1) => 
-  have ( (x + 1) / 2) < (x + 1) :=  Nat.div_lt_self' x 0
-    1 + lg ((x + 1)/2)
+-- def lg : ℕ → ℕ
+-- | 0 =>  0
+-- | (x + 1) => 
+--   have ( (x + 1) / 2) < (x + 1) :=  Nat.div_lt_self' x 0
+--     1 + lg ((x + 1)/2)
 
 -- #check lg 
 
 -- #eval lg 3
 
+open Nat
 
 
-/-
-In below we define the structure of pythagorean triples: 
-
--/
-
-
-
-
-
-/- 
-We want to define the floor function. Given a rational number `q = [(r,s)]` there is a unique integer which is smaller than `q`. 
--/
--- def floor : ℚ → ℤ :=  Quot.lift 
+example (n : ℕ) (h : n ≠ 0) : succ (pred n) = n := 
+by
+  cases n with
+  | zero =>
+    -- goal: h : 0 ≠ 0 ⊢ succ (pred 0) = 0
+    apply absurd rfl h
+  | succ m =>
+    -- second goal: h : succ m ≠ 0 ⊢ succ (pred (succ m)) = succ m
+    rfl  
