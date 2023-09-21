@@ -214,12 +214,14 @@ by
   | inr hx₂ => sorry  
 
 
-
+/- Here's a similar problem with -/
 example : x < |y| → x < y ∨ x < -y := by
-  rcases le_or_gt 0 y with h | h
-  · rw [abs_of_nonneg h]
+  cases le_or_gt 0 y with 
+  | inl hy₁ => 
+    rw [abs_of_nonneg hy₁]
     intro h; left; exact h
-  . rw [abs_of_neg h]
+  | inr hy₂ => 
+    rw [abs_of_neg hy₂]
     intro h; right; exact h
 
 
