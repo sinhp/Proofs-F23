@@ -28,7 +28,7 @@ A __literal__ is an atomic formula or a negated atomic formula, like `P`, `¬P`,
 
 We say a propositional formula is a __Conjunctive Normal Form__(CNF) if it is a conjunction of disjunctions of literals. 
 
-This means a formula is in conjunctive normal form if it has the form  `A1 ∨ ... ∨ Am` , where each `Ai` is a  disjunctions of literals (atoms or negated atoms).
+This means a formula is in conjunctive normal form if it has the form  `A1 ∧ ... ∧ Am` , where each `Ai` is a  disjunctions of literals (atoms or negated atoms).
 
 
 Example: 
@@ -56,7 +56,7 @@ For each of the following propositional formulas find a logically equivalent for
 1. ` P → (Q ∧ R) ` 
 2. ` (P₁ ∧ P₂) ∨ (Q₁ ∧ Q₂) `
 3. ` ¬¬P ∧ ¬ Q `
-4. `¬P ∧ ¬Q`
+4. `¬P ∨ ¬ (Q ∧ R) `
 -/
 
 

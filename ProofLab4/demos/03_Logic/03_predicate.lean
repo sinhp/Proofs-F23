@@ -125,6 +125,51 @@ by
 
 
 
+#check @id
+#print id
+
+example : Injective (id : ℕ → ℕ ) := 
+by 
+  -- unfolding the definition of injectivity 
+  unfold Injective
+  -- Now we want to prove the univesally quantified statement `∀ ⦃a₁ a₂ : X⦄, id a₁ = id a₂ → a₁ = a₂`. To this end, we use the introduction rule for `∀` which says that it suffices to prove the statement for arbitrary `a₁ a₂ : X`. So, let's assume arbirary `a` and `b` in `X`. 
+  intro a b 
+  -- Now we want to prove the implication `id a = id b → a = b`. To this end, we use the introduction rule for `→`. To this end we asssume `id a = id b` with a proof `hab`. 
+  intro hab 
+  have ha : a = id a := by rfl -- this adds the proof `ha` to the list of assumptions. 
+  have hb : b = id b := by rfl 
+  -- We substitute `a` by `id a` in the goal. This will change `a` to `id a` on the left-hand side of the goal. 
+  rw [ha]
+  rw [hb]
+  assumption -- instead of `exact hab`
+
+
+
+example : Injective (id : ℕ → ℕ ) := 
+by 
+  -- unfolding the definition of injectivity 
+  unfold Injective
+  -- Now we want to prove the univesally quantified statement `∀ ⦃a₁ a₂ : X⦄, id a₁ = id a₂ → a₁ = a₂`. To this end, we use the introduction rule for `∀` which says that it suffices to prove the statement for arbitrary `a₁ a₂ : X`. So, let's assume arbirary `a` and `b` in `X`. 
+  intro a b 
+  -- Now we want to prove the implication `id a = id b → a = b`. To this end, we use the introduction rule for `→`. To this end we asssume `id a = id b` with a proof `hab`. 
+  intro hab 
+  have ha : a = id a := by rfl -- this adds the proof `ha` to the list of assumptions. 
+  have hb : b = id b := by rfl 
+  -- let's simplify `hab`. 
+  rw [← ha] at hab
+  rw [← hb] at hab
+  assumption
+
+
+example : Injective (id : ℕ → ℕ ) := 
+by 
+  intro a b hab 
+  exact hab
+
+
+
+
+
 /- Let's prove that the __identity__ function is __injective__ -/ 
 
 lemma inj_id : Injective (id : X → X) :=
@@ -158,11 +203,36 @@ example : ¬ Injective (fun x : ℝ ↦ x ^ 2) := by
 
 
 
--- **Injections are closed under composition**, that is the composite of injective functions is injective. Here is a forward proof.
+-- **Injections are closed under composition**, that is the composite of injective functions is injective. Here is a forward proof. 
+
+/- 
+If `f : X → Y` and `g : Y → Z` are functions we can compose `f` and `g` to get a function `g ∘ f : X → Z`. 
+
+`g ∘ f (x) = g(f(x))`
+-/  
+
+
 lemma inj_comp {X Y Z : Type} (f : X → Y) (g : Y → Z) (inj_f : Injective f) (inj_g : Injective g): 
   Injective (g ∘ f) := 
 by 
-  sorry 
+  intro a b  
+  intro hab 
+  dsimp at hab -- definitional simplification 
+  apply inj_f -- wanted to prove a = b. That we have if we prove f a = f b since then by `inj_f : (f a = f b) → (a = b)` we have a = b   
+  apply inj_g 
+  assumption 
+
+
+
+example (f : X → Y) (g : Y → Z) (inj_f : Injective f) (inj_g : Injective g): 
+  Injective (g ∘ f) := 
+by 
+  intro a b  
+  intro hab 
+  dsimp at hab -- definitional simplification 
+  have : f a = f b := by exact inj_g hab
+  exact inj_f this
+
 
 /-
 In below we prove that 

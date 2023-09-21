@@ -188,7 +188,7 @@ by
   exact hnq (hpq hnp)
 
 example (g : Nat → Nat → Nat)
-        (h₁ : ∀ xq, xq ≠ 0 → g xq xq = 1)
+        (h₁ : ∀ y, y ≠ 0 → g y y = 1)
         (h₂ : x ≠ 0)
         : g x x + x = 1 + x := by
   conv =>
