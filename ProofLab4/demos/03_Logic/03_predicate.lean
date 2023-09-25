@@ -200,7 +200,7 @@ example : ¬ Injective (fun x : ℝ ↦ x ^ 2) := by
   · linarith
   · linarith
 
-
+ 
 
 
 -- **Injections are closed under composition**, that is the composite of injective functions is injective. Here is a forward proof. 
@@ -234,6 +234,8 @@ by
   exact inj_f this
 
 
+
+
 /-
 In below we prove that 
 
@@ -256,7 +258,7 @@ In below we prove the following:
 __Proof sketch__: 
 To prove the injectivity we have to show that given arbitrary real numbers `a b : ℝ` if their cubes are equal then they are the themselves equal, i.e. we must prove the implication `a^3 = b^3 → a = b`.  A main observation in the proof below is that `a ^ 3 - b ^ 3` factors as `(a - b) * (a ^ 2 + ab + b ^ 2)`, i.e.
 ` a ^ 3 - b ^ 3 = (a - b) * (a ^ 2 + ab + b ^ 2) `. 
-From this we conclude that either `(a - b) = 0` which immediately implies that `a = b` or that `(a ^ 2 + ab + b ^ 2) = 0`. In the second case, we argue by cases: either `a = 0` or `0 < a`. In the first case, we conclude `b = 0` since `0 = (a ^ 2 + ab + b ^ 2) = b ^ 2 `. In the latter case, we notice that  `0 = 2 * (a^2 + a * b + b^2) = a^2 + (a + b)^2 + b^2 > 0` since `a^2 >0` and `(a + b)^2 + b^2` is non-negative. But this is clearly false from which we can conclude anything including that `a = b`.
+From this we conclude that either `(a - b) = 0` which immediately implies that `a = b` or that `(a ^ 2 + ab + b ^ 2) = 0`. In the second case, we argue by cases: either `a = 0` or `a ≠ 0`. In the first case, we conclude `b = 0` since `0 = (a ^ 2 + ab + b ^ 2) = b ^ 2 `. In the latter case, we notice that  `0 = 2 * (a^2 + a * b + b^2) = a^2 + (a + b)^2 + b^2 > 0` since `a^2 >0` and `(a + b)^2 + b^2` is non-negative. But this is clearly false from which we can conclude anything including that `a = b`.
 -/
 
 lemma inj_cube : Injective (fun (x:ℝ) ↦ x ^ 3) := 
@@ -276,17 +278,12 @@ by
       · apply pow_eq_zero (n := 3); rw [← h, ha]; ring
       rw [ha, hb]   
     · have := -- case 2b: x1 ≠ 0
-      calc 0 < a^2 + ((a + b) ^ 2 + b ^ 2) := by sorry
+      calc 0 < a^2 + ((a + b) ^ 2 + b ^ 2) := by positivity 
           _ = 2 * (a^2 + a * b + b^2) := by ring
           _ = 2 * 0 := by rw [h₂]
           _ = 0 := by ring
       linarith -- contradiction!
 
-
-
-/-
-Note that the proof above is nonconstructive; can you give a constructive proof instead? 
--/
 
 
 lemma pow_nine_comp_pow_three : 

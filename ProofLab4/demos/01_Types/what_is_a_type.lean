@@ -50,6 +50,14 @@ Puzzle 1 : what is the result of _evaluating_ the following expressions?
 
 #eval (5:ℚ)/2 
 
+-- #eval (5/2 : ℝ)
+#norm_num (5/2 : ℝ) 
+
+-- #norm_num (π/2 : ℝ) 
+
+example : (2 : ℝ) = (1 : ℕ)  + 1 := by norm_num
+
+
 #eval 2^5
 
 --#eval 2 ^ (-5 : ℤ)  -- ℤ  are not closed under exponentiation `^` 
