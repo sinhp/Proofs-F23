@@ -285,6 +285,8 @@ by
       linarith -- contradiction!
 
 
+example {a : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ 3 + a := by positivity
+
 
 lemma pow_nine_comp_pow_three : 
 (fun (x:ℝ) => x^9) = (fun (x:ℝ) => x ^ 3) ∘ (fun (x:ℝ) => x ^ 3) := 
@@ -315,24 +317,84 @@ by
   
 
 /- `Odd : ℕ → Prop` is a predicate  -/
-example (n : ℤ) : Odd n = ∃ k : ℤ, n = 2 * k + 1 := 
+#check Odd 2 -- "2 is an odd integer". 
+
+example (n : ℤ) : Odd n ↔ ∃ k : ℤ, n = 2 * k + 1 := 
 by 
-  rfl 
-
-
+  rfl  -- works because the predicate `Odd n` (which says `n` is an odd integer) is defined exactly as `∃ k : ℤ, n = 2 * k + 1`. 
 
 
 /- ∃ elim -/
+
+#check Odd (3^2)
+example : Odd (3^2) := 
+by 
+  unfold Odd
+  use 4
+  rfl
+
+
+example : Odd (5^2) := 
+by 
+  unfold Odd
+  use 12
+  rfl
+
+
+
+example (a b c : ℤ ) : a * (b + c) = a * b + a * c := 
+by 
+  rw [mul_add]
+
+
+#check mul_comm
+#check add_comm
+
+
+example (a b c : ℤ ) : (a + b) * (c + d) = a * c + a * d + b * c + b * d := 
+by 
+  --rw [mul_add]
+  --rw [add_mul, add_mul]
+  ring
+
+
+
+
 example (n : ℤ) (hn : Odd n) : Odd (n^2) :=
 by 
-  simp [Odd] at *
-  obtain ⟨k, hk⟩ := hn
-  sorry 
+  -- unfold `Odd` everywhere, both in assumptions and in the goal. 
+  unfold Odd at * 
+  -- now we want to break down the assumption `hn` to gather some infromation about `n` which is useful to prove the goal. therefore we need to eliminate the existential quantifier in `hn`. 
+  -- `hn` provides two things: 1. the __data__ which is a number `k` 2. the __property__ that `n = 2 * k + 1`. 
+  obtain ⟨val, prop⟩ := hn 
+  -- we are looking for a new `k` with the property that `n^2 = 2 * k + 1`
+  -- calc n ^ 2 = n * n := by rfl 
+  -- _          = (2 * val + 1) * (2 * val + 1) := by rw [prop, prop]
+  -- -          = (4 * (val^2)) + (2 * val) + (2 * val) + 1 := by ring 
+  -- _          = 2 * (2 * val^2 + val + val ) + 1 := by ring  
+  use 2 * val^2 + 2 * val
+  rw [prop]
+  ring
+
+
+
 
 
 example {x y : ℤ} (hx : Odd x) (hy : Odd y) : Odd (x + y + 1) := 
 by
-  sorry 
+  unfold Odd at * 
+  obtain ⟨val_x, prop_x⟩ := hx
+  obtain ⟨val_y, prop_y⟩ := hy
+  have h : x + y + 1  = 2 *  (val_x + val_y + 1) + 1  := by rw [prop_x, prop_y]; ring 
+  use val_x + val_y + 1
+  exact h
+  --calc 
+  --     x + y + 1 = 2 * val_x + 1 + 2 * val_y + 1 + 1 := by 
+  --     rw [prop_x, prop_y]   
+  -- _              = 2 *  (val_x + val_y + 1) + 1 := by ring  
+
+
+
 
 example (n : ℤ) : Even (n ^ 2 + 3 * n + 4) := 
 by

@@ -8,6 +8,8 @@ import Mathlib.Data.Real.Basic -- in this file in Mathlib the real numbers are d
 import Mathlib.Data.Real.Sqrt -- this file defines the square root of a real number. 
 -- import Mathlib.Data.Set
 
+noncomputable section
+open Classical 
 /-
 Schröder-Bernstein theorem: 
 If we have injections `f : A → B` and `g : B →A` then `A` and `B` are in bijection which means we have a function `h : A → B` which is a bijective. 
@@ -35,13 +37,17 @@ open Function
 
 
 
-theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Injective f) (hg : Injective g) :
-    ∃ (h : α → β), Bijective h := 
+theorem schroeder_bernstein {f : A → B} {g : B → A} : (Injective f) →  (Injective g → ∃ (h : A → B), Bijective h) := 
 by 
-    sorry 
+  -- we want to prove an implication, namely (Injective f) →  (Injective g → ∃ (h : A → B), Bijective h), therefore we introduce a hypothesis stating that `f` is injective. 
+  -- Let `f` be an injective function 
+  intro inj_f 
+  -- Let `g` be an injective function 
+  intro inj_g 
+  -- Now we want to show that there __exists__ a function `h` which is both injective and surjective. 
+  use sorry 
+  sorry 
 
-
-noncomputable section
 /- Left-closed right-closed interval  [0,1] -/
 #check (Icc 0 1 : Set ℝ) 
 
@@ -60,6 +66,9 @@ variable ( x  : Icc (0 : ℝ) 1 ) -- x : { a : ℝ | 0 ≤ a ≤ 1}
 #check x.prop
 end 
 
+#check Ico  -- [0,1)
+#check Ioc 
+#check Ioo 
 
 def F : Icc (0 : ℝ) 1 → Ico (0 : ℝ) 1 := fun x =>
   ⟨x.val/2, by
@@ -121,7 +130,9 @@ def Neg_pow_of_two : ℕ → Set ℝ
 
 
 
--- def h : Icc 0 1 → Ico 0 1 := fun x => {
+def h : Icc 0 1 → Ico 0 1 := 
+sorry 
+--fun x => {
 --   val := _
 --   property := _
 -- }
