@@ -52,12 +52,12 @@ Whereas ` P → (Q ∧ R) ` is not a CNF its logical equivalent ` (¬P ∨ Q) �
 ### Find CNF
 For each of the following propositional formulas find a logically equivalent formula in CNF. Then prove that your CNF formula is logically equivalent to the given formula.
 
-
 1. ` P → (Q ∧ R) ` 
 2. ` (P₁ ∧ P₂) ∨ (Q₁ ∧ Q₂) `
 3. ` ¬¬P ∧ ¬ Q `
 4. `¬P ∨ ¬ (Q ∧ R) `
 -/
+
 
 
 
@@ -190,6 +190,7 @@ Here's our proof strategy:
 -/
 
 
+
 /-
 Translate the following informal proof strategy to a formal proof in Lean. 
 -/
@@ -223,11 +224,6 @@ example : x < |y| → x < y ∨ x < -y := by
   | inr hy₂ => 
     rw [abs_of_neg hy₂]
     intro h; right; exact h
-
-
-
-
-
 
 
 

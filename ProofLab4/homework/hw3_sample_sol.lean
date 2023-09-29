@@ -46,3 +46,41 @@ by
       | inr h₆₂ => assumption  
     
 
+
+/-  # Solution to P1.Q2. -/
+
+/- 
+The CNF logically equivalent to the formula `(P₁ ∧ P₂) ∨ (Q₁ ∧ Q₂)` is
+`(P₁ ∨ Q₁) ∧ (P₁ ∨ Q₂) ∧ (P₂ ∨ Q₁) ∧ (P₂ ∨ Q₂)`. Note that this formula is a CNF since it is a conjunction of `(P₁ ∨ Q₁)`, `(P₁ ∨ Q₂)`, `(P₂ ∨ Q₁)`, and `(P₂ ∨ Q₂)` each of which is a disjunction of literals. The list of literals in the first disjunct is `[P₁, Q₁]` and the list of literals in the second disjunct is `[P₁, Q₂]`. The list of lists of literals that is the CNF is thus `[[P₁, Q₁], [P₁, Q₂], [P₂, Q₁], [P₂, Q₂]]`.
+-/ 
+
+
+example : P ∨ (Q₁ ∧ Q₂) ↔ (P ∨ Q₁) ∧ (P ∨ Q₂) :=
+by 
+  constructor
+  · intro h₁
+    cases h₁ with
+    | inl h₂ => exact ⟨Or.inl h₂, Or.inl h₂⟩
+    | inr h₃ => exact ⟨Or.inr h₃.left, Or.inr h₃.right⟩
+  · intro h 
+    cases h.left with
+    | inl hp => exact Or.inl hp 
+    | inr hq => cases h.right with 
+                | inl hp' => exact Or.inl hp'
+                | inr hq' => exact Or.inr ⟨hq, hq'⟩
+
+
+
+example : ((P₁ ∧ P₂) ∨ (Q₁ ∧ Q₂)) ↔ ((P₁ ∨ Q₁) ∧ (P₁ ∨ Q₂) ∧ (P₂ ∨ Q₁) ∧ (P₂ ∨ Q₂)) :=
+by 
+  constructor
+  · intro h₁
+    cases h₁ with
+    | inl h₂ => exact ⟨Or.inl h₂.left, Or.inl h₂.left, Or.inl h₂.right, Or.inl h₂.right⟩
+    | inr h₃ => exact ⟨Or.inr h₃.left, Or.inr h₃.right, Or.inr h₃.left, Or.inr h₃.right⟩  
+  · intro h₄
+    apply Or.inl 
+    constructor
+    · sorry
+    · sorry 
+    

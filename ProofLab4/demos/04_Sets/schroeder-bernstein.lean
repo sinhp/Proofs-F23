@@ -37,7 +37,7 @@ open Function
 
 
 
-theorem schroeder_bernstein {f : A → B} {g : B → A} : (Injective f) →  (Injective g → ∃ (h : A → B), Bijective h) := 
+theorem schroeder_bernstein {f : A → B} {g : B → A} : (Injective f) →  (Injective g) → ∃ (h : A → B), Bijective h := 
 by 
   -- we want to prove an implication, namely (Injective f) →  (Injective g → ∃ (h : A → B), Bijective h), therefore we introduce a hypothesis stating that `f` is injective. 
   -- Let `f` be an injective function 
@@ -45,13 +45,13 @@ by
   -- Let `g` be an injective function 
   intro inj_g 
   -- Now we want to show that there __exists__ a function `h` which is both injective and surjective. 
-  use sorry 
-  sorry 
+  use sorry -- here we provide the function `h`
+  sorry -- here we show that `h` is bijective. 
 
-/- Left-closed right-closed interval  [0,1] -/
+/- Left-closed right-closed interval  `[0,1]` -/
 #check (Icc 0 1 : Set ℝ) 
 
-/- Left-closed right-open interval  [0,1) -/
+/- Left-closed right-open interval  `[0,1)` -/
 #check (Ico 0 1 : Set ℝ) 
 
 
@@ -66,13 +66,37 @@ variable ( x  : Icc (0 : ℝ) 1 ) -- x : { a : ℝ | 0 ≤ a ≤ 1}
 #check x.prop
 end 
 
+/-
+Icc 0 1 : Set ℕ -- what is `Set ℕ`?  
+-/
+#check Icc 0 1
+#check (Icc 0 1 : Set ℝ)
+
+section 
+example : Ico (0 : ℝ) 1 ⊆ Icc (0 : ℝ) 1 := 
+by 
+  intro x hx
+  dsimp [Icc]
+  dsimp [Ico] at hx
+  constructor 
+  · exact hx.1
+  · apply le_of_lt; exact hx.2  
+
+
+-- x ≤ 1 := x < 1 ∨ x = 1 
+end 
+
+
 #check Ico  -- [0,1)
 #check Ioc 
 #check Ioo 
 
 def F : Icc (0 : ℝ) 1 → Ico (0 : ℝ) 1 := fun x =>
   ⟨x.val/2, by
-    obtain ⟨x, hx⟩ := x; simp at hx ⊢; constructor <;> linarith⟩
+    obtain ⟨val, prop⟩ := x; simp at prop ⊢ ; constructor <;> linarith⟩
+
+/- The function `F` has two parts because we need to provide an output, namely `x/2` and a proof that `x/2` is in `[0,1)`. -/
+
 
 #check F
 

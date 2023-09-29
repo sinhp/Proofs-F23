@@ -227,6 +227,10 @@ x^2 + y^2
 
 
 
+def pair (x : X) (y : Y) : X × Y := (x, y)
+
+#check @pair
+
 /-- for a pair `p`, i.e. a term of type `X × Y` the output of `fst` is the first coordinate of `p` which we access using the first projection `.1`. -/
 def fst (p : X × Y) := 
 p.1 
@@ -243,6 +247,8 @@ p.2
 
 
 
+
+def fun_pair (f : X → Y) (g : X → Z) : X → (Y × Z) := fun x => (f x, g x)
 
 
 
