@@ -127,7 +127,7 @@ Given a function `s : Y → Y` we say that `y : Y` is a __fixed point__ of `s` i
 def Fix (s : Y → Y) := { y : Y | s y = y} 
 
 /-
-Given a function `f : A → A → B`, we say a function `g : A → B` is __f-represetable__ if there exists `a : A` such that `g = f a`. 
+Given a function `f : A → A → B`, we say a function `g : A → B` is __represetable__ by `f` if there exists an element `a : A` such that `g = f a`. 
 -/
 
 def representable (f : A → A → B) (g : A → B) := ∃ a : A, g = f a
