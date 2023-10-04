@@ -215,12 +215,12 @@ If `f : X → Y` and `g : Y → Z` are functions we can compose `f` and `g` to g
 lemma inj_comp {X Y Z : Type} (f : X → Y) (g : Y → Z) (inj_f : Injective f) (inj_g : Injective g): 
   Injective (g ∘ f) := 
 by 
-  intro a b  
-  intro hab 
+  unfold Injective
+  intro a b hab  -- let `a` and `b` be arbitrary elemenets of `X` with the asssumption that `(g ∘ f) a = (g ∘ f) b`
   dsimp at hab -- definitional simplification 
   apply inj_f -- wanted to prove a = b. That we have if we prove f a = f b since then by `inj_f : (f a = f b) → (a = b)` we have a = b   
   apply inj_g 
-  assumption 
+  exact hab
 
 
 
@@ -292,6 +292,15 @@ lemma pow_nine_comp_pow_three :
 (fun (x:ℝ) => x^9) = (fun (x:ℝ) => x ^ 3) ∘ (fun (x:ℝ) => x ^ 3) := 
 by 
   funext x; dsimp; ring
+
+
+def cube (x : ℝ) := x ^ 3 
+
+example : (fun (x:ℝ) ↦ x ^ 9) = cube ∘ cube := 
+by 
+  funext x 
+  dsimp [cube]
+  ring 
 
 
 example : Injective (fun (x:ℝ) ↦ x ^ 9) := 

@@ -302,10 +302,11 @@ def Square (f : X → X) : X → X :=
 
 
 /-
-A notation for squaring
+A notation for squaring and cubing
 -/
 
 notation:1000 f "²" => Square f
+notation:1000 f "³" => Compose f (Square f) 
 
 
 /-

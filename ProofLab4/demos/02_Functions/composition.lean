@@ -79,7 +79,7 @@ variable (f₀ : ℕ → ℤ) (g₀ : ℤ → ℚ) (h₀ : ℚ → ℕ )
 -/ 
 
 -- #check g₀ ∘ f₀  
-#check h₀ ∘ f₀ -- can you understand the error?
+-- #check h₀ ∘ f₀ -- can you understand the error?
 #check (h₀ ∘ g₀) ∘ f₀ 
 #check h₀ ∘ (g₀ ∘ f₀)
 #check (h₀ ∘ g₀) ∘ f₀ 
@@ -123,119 +123,21 @@ end
 
 
 
-
-
-
-/- 
-lemma switch_switch_alt : 
-  switch ∘ switch = id := 
-begin
-  funext b, 
-  dsimp,
-  refl, -- this does not work since `switch b` depends on the value of `b`, and we have to reason by cases. 
-end 
-
-
-
 lemma switch_switch : 
   switch ∘ switch = id := 
-begin
-  funext b, 
-  dsimp,
-  cases b, -- tactic `cases` branches the proof into two branches, one when `b = ff` and the second branch when `b = tt` 
-  {
-    refl, 
-  }, 
-  {
-    refl, 
-  },
-end 
-
-
-
-
-lemma switch_switch_alt_alt : 
-  switch ∘ switch = id := 
-begin
-  funext b, 
-  dsimp,
-  cases b, 
-  repeat {refl},
-end 
-
-
-
-
-lemma swap_square_is_id (X Y : Type) : (swap_pair Y X) ∘ (swap_pair X Y)= id := 
-begin
-ext p, 
-repeat {refl}, -- instead of writing refl two times. 
-end 
-
-
-
-
--- function `fun_pair` takes two functions and returns their cartesian product, i.e. a function from the cartesian product of the domains of the input function to the cartesian product of the codomains of the the input functions. 
-
-def fun_pair (f : A → B) (g : X → Y) (p : A × X) : B × Y   := 
-(f p.1 , g p.2)
-
-
-
-#check fun_pair 
-#check fun_pair double switch 
-#eval (fun_pair double switch) (2, ff)
-
-
-
-
-
-#check pairing
-#check @pairing 
-
-
-/-
-Therer is a difference between the functions `pairing` and `fun_pair`. 
-1. `pairing` takes two functions with the same domain as inputs.  
-2. `fun_pair` on the other hand takes any two functions as input. 
-
-However, theorem `fun_pair_is_pairing` below proves that the two functions `pairing` and `fun_pair` are intimately related. 
--/
-
-lemma fun_pair_is_pairing (f : A → X) (g : B → Y) : 
-fun_pair (f : A → X) (g : B → Y) =  
-pairing (λ c : A × B, f c.1) (λ c : A × B, g c.2) := 
-begin
-  funext x, 
-  refl, 
-end 
-
-
-
-/- 
-Projection `fst` and `pairing` commute. 
--/
-lemma fun_of_fst_is_fst_of_fun_pair (X₁ Y₁ X₂ Y₂: Type) (f : X₁ → Y₁) (g : X₂ → Y₂) : fst ∘ (fun_pair f g) = f ∘ fst := 
-begin
-  ext p, 
-  refl, 
-end  
-
-
-def associator (X Y Z : Type) : X × (Y × Z) → (X × Y) × Z := 
-λ p, ((p.1, p.2.1), p.2.2)
- 
-#check associator 
-
---Challenge: prove pentagon 
-
-
+by 
+  -- we are proving an equality of functions, so we use the function extensionality axiom which says two functions are equal if they are equal on all inputs.
+  funext b 
+  dsimp
+  -- rfl -- this does not work since `switch b` depends on the value of `b`, and we have to reason by cases. 
+  cases b with 
+  | true => rfl 
+  | false => rfl
 
 
 
 
 /-! ### Propoerties of composition of functions -/
-
 
 /- 
 __unitality of composition__ is a fancy name for saying that the composition of the identity function and any function `f` is the same function `f`. 
@@ -256,25 +158,21 @@ Now we need to supply the proof. But let's think about `id ∘ f`. For any `x : 
 __left unitality of composition__
 -/ 
 
-lemma comp_left_unit {X Y : Type} (f : X → Y) : 
+lemma comp_left_unit (f : X → Y) : 
   id ∘ f = f := 
-begin
-funext x,
-dsimp,
-refl,
-end 
+by 
+  funext x 
+  dsimp 
 
 
 /-
 __right unitality of composition__
 -/ 
-lemma comp_right_unit {X Y : Type} (f : X → Y) : 
+lemma comp_right_unit (f : X → Y) : 
   f ∘ id = f := 
-begin 
-funext x, 
-dsimp, 
-refl, 
-end 
+by 
+  funext x 
+  dsimp 
 
 
 /- 
@@ -283,51 +181,34 @@ The theorem __associativity of composition__ says in that the order of bracketin
 for any three functions `(f : X → Y ) (g : Y → Z) (h : Z → W) `. 
 -/
 
-theorem comp_assoc {X Y Z W: Type} (f : X → Y ) (g : Y → Z) (h : Z → W) :   (h ∘ g) ∘ f  = h ∘ (g ∘ f)  := 
-begin 
-funext x, 
-dsimp, 
-refl, 
-end 
-
+theorem comp_assoc (f : X → Y ) (g : Y → Z) (h : Z → W) :  (h ∘ g) ∘ f  = h ∘ (g ∘ f)  := 
+by 
+  funext x
+  dsimp 
 
 
 theorem comp_tetrahedral_assoc (f : X → Y ) (g : Y → Z) (h : Z → W) (k : W → V) : k ∘ (h ∘ ( g ∘ f)) = ((k ∘ h) ∘ g) ∘ f 
 := 
-begin
-  funext x, 
-  dsimp, 
-  refl, 
-end 
-
-
-theorem comp_tetrahedral_assoc_alt (f : X → Y ) (g : Y → Z) (h : Z → W) (k : W → V) : k ∘ (h ∘ ( g ∘ f)) = ((k ∘ h) ∘ g) ∘ f 
-:= 
-begin
-  calc k ∘ (h ∘ ( g ∘ f)) = (k ∘ h ) ∘ (g ∘ f) : by rw comp_assoc (g ∘ f) h k 
-  ... = ((k ∘ h) ∘ g) ∘ f : by rw comp_assoc f g (k ∘ h),   
-end 
-
-
-
-
-end PROOFS
+by
+  funext x
+  dsimp
 
 
 
 /-
-We define the operation of __squaring__ a function using `compose`:
+We defined the operation of __squaring__ a function using `compose`:
 -/
+#check Square  -- Compose f f
+#reduce Square 
 
-def Square (f : X → X) : X → X :=
-  Compose f f
 
 
-/-
-A notation for squaring
--/
 
-notation:1000 f "²" => Square f
+example (f : X → X) : (f² = f) → (f³ = f)  :=
+by 
+  intro h 
+  rw [h]
+  rfl
 
 
 

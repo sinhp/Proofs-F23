@@ -142,8 +142,10 @@ def Neg_pow_of_two : ℕ → Set ℝ
 
 #check Neg_pow_of_two 5
 
+#check {1, 1/2, 1/4, 1/8, 1/16, ... } : Set (Icc 0 1) 
 
--- example : Neg_pow_of_two 4 = {0, 1/2, 1/4, 1/16} := 
+
+-- example : Neg_pow_of_two 4 = {1, 1/2, 1/4, 1/8, 1/16, ... } := 
 -- by 
 --   simp
 --   apply?
