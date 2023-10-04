@@ -45,8 +45,27 @@ def image (f : A → B) (S : Set A) := {f a | a ∈ S}
 example : {1} = setOf Odd ∩ {n | n ≤ 2} := 
 by 
   ext n 
-  sorry 
+  constructor 
+  · intro h
+    rw [mem_singleton_iff] at h
+    rw [mem_inter_iff]
+    rw [h]
+    constructor 
+    · use 0; rfl 
+    · dsimp; norm_num 
+  -- the more difficult direction   
+  · intro h 
+    rw [mem_inter_iff] at h
+    obtain ⟨d, hd⟩ := h.1 
+    have hn : n ≤ 2 := h.2 
+    have d_le_one : d ≤ 1 := by linarith
+    simp 
+    have d_not_one : d ≠ 1 := by intro h; rw [h] at hd; linarith
+    have d_zero : d = 0 := by linarith
+    rw [d_zero] at hd
+    assumption
 
+ 
 
 example (f : A → B) {a : A} {S : Set A} (h : a ∈ S) : f a ∈ f '' S :=
 by 
@@ -55,11 +74,10 @@ by
 
 example (f : A → B) {a : A} {S : Set A} (h : a ∈ S) : f a ∈ f '' S :=
 by 
-  use a 
+  use a, h 
+
 
 #check mem_image_of_mem
-
-
 
 
 example (f : A → B) (S T : Set A) : 
@@ -141,8 +159,6 @@ by
 example (m : ℕ) (h : 0 < m + m) : 0 < m := 
 by 
   linarith
-
-#check bit0
 
 
 example (m : ℕ) (h : 0 < m) : ∃ d : ℕ, m = d + 1 :=
