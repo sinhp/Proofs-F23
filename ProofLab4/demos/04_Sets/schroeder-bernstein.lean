@@ -243,7 +243,7 @@ def 𝕊' := ⋃ n, S' n
 
 @[simp]
 def S : ℕ → Set (Icc (0 : ℝ) 1)
-  | 0 => univ \ G '' univ -- S_0 := X \ g(X) = {1} -- [0,1] ∖ [0,1)2
+  | 0 => univ \ (G '' univ) -- S_0 := X \ g(X) = {1} -- [0,1] ∖ [0,1)
   | n + 1 => G '' (F '' S n) -- S_{n+1} := g(f(S_n)) = {1/2^(n+1)}
 
 def 𝕊 := ⋃ n, S n   -- 𝕊 = {1,1/2, ... }
@@ -259,34 +259,117 @@ The `invFun f` is a left inverse if `f` is injective and a right inverse if `f` 
 instance :  Nonempty (Ico (0: ℝ) 1) := ⟨⟨0, by dsimp [Ico]; constructor; positivity; positivity ⟩⟩
 
 -- Our goal was to define `H : [0,1] → [0,1)` which is injective and bijective
+-- `F : [0,1] → [0,1)` takes `x` to `x/2`
+-- `G : [0,1) → [0,1]` for every `y : [0,1)`, `G y = y`. So there is a partial inverse for `G`, namely `invFun G : [0,1] → [0,1)`.   
 -- `(invFun G) y = y ↔  ∃ x ∈ Ico (0 : ℝ) 1, G x = y ↔ y ∈ Ico (0 : ℝ) 1` 
 -- otherwise (i.e. when `y ≠ 1`),  `(invFun G) y` is some arbitrary element of `Ico (0 : ℝ) 1` 
 -- if `y ∈ 𝕊` then `H y = y/2`, and otherwise `H y = y` 
+
 def H (y : Icc (0 : ℝ) 1) : Ico (0 : ℝ) 1  :=
   if y ∈ 𝕊 then (F y) else (invFun G y) 
 
+#check Icc
+
+#check univ
+
+#check mem_iUnion
+#check iUnion
+#check mem_diff
 
 
+-- in our special case `𝕊ᶜ = [0,1] ∖ {1,1/2, ...}` and `G '' univ = [0,1)`.
 lemma fam_union_compl_subset_univ_img  {x : Icc (0 : ℝ) 1} : 𝕊ᶜ ⊆  G '' univ := 
 by 
-  sorry   
+  -- Let x be in the complement of the set `𝕊`. We show that it belongs to the image of function `G`. 
+  intro x hxnS   
+  contrapose! hxnS 
+  -- we simplified the goal from `¬ x ∈ 𝕊ᶜ` to `x ∈ 𝕊`.  
+  simp 
+  rw [𝕊, mem_iUnion]
+  -- observe that `S 0` is the universe (i.e. [0,1]) minus the image of the function `G` 
+  use 0 
+  rw [S, mem_diff]
+  constructor 
+  · trivial 
+  · assumption   
 
 
+-- `invFun G : [0,1] → [0,1)`, and by definition, `(invFun G) y = y` if y ≠ 1 and otherwise `(invFun G) y` is some arbitrary element in `[0,1]` 
+
+#check invFun_eq
+
+
+-- `G (invFun G 1) ≠ 1` 
 theorem SBRightInv {x : Icc (0 : ℝ) 1} (hx : x ∉ 𝕊) : G (invFun G x) = x := 
-by
-  sorry 
+by 
+  obtain ⟨y, hy⟩ := fam_union_compl_subset_univ_img (x:= x) hx
+  -- all we need to prove is that `x` is in the image of `G` because in that case the lemma `invFun_eq` tells us that  `G (invFun G x) = x`. 
+  apply invFun_eq 
+  use y 
+  exact hy.right 
 
 
+
+-- `H : [0,1] → [0,1)`
 theorem inj_H : Injective H := 
 by 
-  sorry 
+  -- let `x,y` be arbitrary elements of `[0,1]` such that `Hx = Hy`. 
+  intro x y heq
+  simp only [H] at heq 
+  -- case analysis on x ∈ 𝕊 and y ∈ 𝕊   
+  -- strategy: if `x ∈ 𝕊` then `H x = F x` and we shall show that `y ∈ 𝕊` using the assumption `heq : H x = H y`. Therefore, `H y = F y` and hence the equation `H x = H y` simplifies to `F x = F y`, and since `F` is injective we conclude that `x = y`.
+  by_cases hxS : x ∈ 𝕊 
+  -- proving `x= y` under the positive assumption that `x ∈ 𝕊`
+  · have hyS : y ∈ 𝕊 := by 
+                          -- using proof by contradiction
+                          by_contra hynS 
+                          rw [if_pos hxS, if_neg hynS] at heq
+                          rw [𝕊, mem_iUnion] at hxS
+                          -- from `heq: F x = invFun G y` we conclude that 
+                          -- `G (F x) = G (invFun G y)` by applying the -- function `G` to both sides.  
+                          have heq' : G (F x) = G (invFun G y) := by congr! 1
+                          have heq'' : G (F x) = y := heq'.trans (SBRightInv hynS) 
+                          obtain ⟨n, hn⟩ :=  hxS
+                          -- So, if x ∈ 𝕊 then that mean x ∈ S n for some n : ℕ, and therefore G F x ∈ S (n+1), and hence G F x ∈ 𝕊 
+                          have : G (F x) ∈ 𝕊 := by rw [𝕊, mem_iUnion] ; use (n + 1) ; apply mem_image_of_mem; apply mem_image_of_mem; exact hn
+                          rw [heq''] at this
+                          contradiction 
+    have hFxy : F x = F y := by rw [if_pos hxS, if_pos hyS] at heq ; assumption 
+    apply inj_F 
+    assumption
+  -- proving `x= y` under the negative assumption that `x ∉ 𝕊`   
+  -- since x ∉ 𝕊 heq tells us invFun G x = if y ∈ 𝕊 then F y else invFun G y
+  · rw [if_neg hxS] at heq 
+    by_cases hyS : y ∈ 𝕊
+    · rw [if_pos hyS] at heq 
+      exfalso 
+      --rw [𝕊, mem_iUnion] at hxS
+      -- from `heq: F x = invFun G y` we conclude that 
+      -- `G (F x) = G (invFun G y)` by applying the -- function `G` to both sides.  
+      have heq' : G (invFun G x) = G (F y) := by congr! 1
+      -- x = G (invFun G x) and G (invFun G x) = G (F y)
+      have heq'' : x = G (F y) := (SBRightInv hxS).symm.trans heq'
+      --obtain ⟨n, hn⟩ :=  hxS
+      -- because y ∈ 𝕊 then that mean y ∈ S n for some n : ℕ, and therefore G F y ∈ S (n+1). We laos know that `x = G (F y)`. Therefore, x ∈ S (n + 1) and hence ` x ∈ 𝕊 = ∪ n, S n`. This contradicts `hxS`  
+      rw [𝕊, mem_iUnion] at hyS 
+      obtain ⟨n, hy⟩ := hyS 
+      have : G (F y) ∈ 𝕊 := by rw [𝕊, mem_iUnion] ; use (n + 1) ; apply mem_image_of_mem; apply mem_image_of_mem; exact hy 
+      rw [← heq''] at this
+      contradiction 
+    -- when y ∉ 𝕊 
+    · sorry 
 
+/- 
+@[simp]
+def S : ℕ → Set (Icc (0 : ℝ) 1)
+  | 0 => univ \ (G '' univ) -- S_0 := X \ g(X) = {1} -- [0,1] ∖ [0,1)
+  | n + 1 => G '' (F '' S n) -- S_{n+1} := g(f(S_n)) = {1/2^(n+1)}
 
+def 𝕊 := ⋃ n, S n   -- 𝕊 = {1,1/2, ... }
 
+So, if x ∈ 𝕊 then that mean x ∈ S n for some n : ℕ, and therefore G F x ∈ S (n+1), and hence G F x ∈ 𝕊 
 
-
-
-
+-/ 
 
 
 
