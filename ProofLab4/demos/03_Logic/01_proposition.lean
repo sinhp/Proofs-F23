@@ -10,7 +10,7 @@ import ProofLab4
 # Logic of Propositions 
 Sina Hazratpour
 Introduction to Proof  
-MATH 301, Johns Hopkins University, Fall 2022   
+MATH 301, Johns Hopkins University, Fall 2023   
 -/
 
 
