@@ -71,6 +71,7 @@ by
   simp
 
 
+section 
 #synth Union (Finset ℕ)           --  `∪` instance on Finsets
 #synth Inter (Finset ℕ)           --  `∩` instance on Finsets
 #synth Insert ℕ (Finset ℕ)        --  inserting/adding an element 
@@ -90,7 +91,7 @@ variable (s : Finset ℕ) (a : ℕ)
 #check Finset.filter
 #check Finset.range
 #check (· ⁻¹' ·)
-
+end 
 
 section bounded_indexed_union
 variable (S := ({1,2} : Finset ℕ ))
@@ -107,8 +108,9 @@ end bounded_indexed_union
 -- | cons (n : ℕ) (l : NatList) : NatList -- If `n : ℕ` and `l : NatList`, then `cons a l` is the list whose first element (aka head) is `n` and with `l` as the rest of the list (aka tail). a :: l 
 
 
-abbrev NatList := List ℕ 
+def NatList := List ℕ 
 
+#check NatList
 
 namespace NatList
 
@@ -151,9 +153,82 @@ def reverse : NatList → NatList
 
 #eval reverse [1,5,7]
 
-
-
 end NatList 
+
+/- The type `NatList` is an  adhoc type for pedagogical reason and we shall use Mathlib's `List` type instead for formalization and hw exercises. -/
 
 #check List ℤ
 #check List ℕ  
+
+
+#check NatList.reverse
+
+
+
+/- ##  Multisets from Lists -/
+
+/- 
+A multisets is a list up to permutation. That means the two lists `[a,b,c,c]` and `[c,b,c,a]` are considered to give rise the same multiset. Another way to think about multisets is that they are finite sets where elements have multiplicities. For example, the multiset `[a,b,c,c]` is the set `{a,b,c}` with the multiplicity of `2` for the element `c`. 
+-/
+
+
+/-
+We first define what it means for two lists to be permutations of each other.
+-/
+
+
+namespace NatList 
+
+/- 
+`Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
+  of each other. This is defined by induction using pairwise swaps. 
+-/
+
+inductive Permu : NatList → NatList → Prop 
+| nil : Permu [] []  
+| cons (n : ℕ) {l₁ l₂ : NatList} (h : Permu l₁ l₂) : Permu (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a] 
+| swap  (m n : ℕ) (l : NatList) : Permu (m :: n :: l) (n :: m :: l)
+-- [a,b, c] ∼ [b,a, c]
+
+
+
+-- [a,b,c,d ] ∼(swap a b [c,d]) 
+-- [b,a,c,d] ∼ (cons b; swap a c [d]) 
+-- [b,c,a,d] ∼(cons b; cons c; swap a d [])
+-- [b,c,d,a] ∼ (cons b; swap c d [a]) 
+-- [b, d,c,a]  ∼ (swap b d [c,a])
+-- [d,b,c,a]
+
+
+-- [a] ∼ [a]
+-- l ∼ l
+
+
+infix :50 " ∼ " =>  Permu
+
+#check [1,2] ∼ [2,1] 
+
+#check NatList
+
+theorem perm_refl : ∀ (l : NatList),  Permu l l  
+| [ ]  => Permu.nil 
+| (n :: l) => Permu.cons n (perm_refl l)
+
+
+#check Permu.nil
+
+
+theorem perm_refl_alt : ∀ (l : NatList),  Permu l l := 
+by 
+  intro l 
+  cases l with   
+  | nil => exact Permu.nil 
+  | cons n l => exact Permu.cons n (perm_refl l)
+
+
+
+
+
+
+end NatList
+

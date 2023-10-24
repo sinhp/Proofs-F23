@@ -66,7 +66,8 @@ by
     assumption
 
  
-
+-- f '' S = { y : B | ∃ x : A, x ∈ S ∧ f x = y }
+-- f a ∈ f '' S ↔ ∃ x : A, x ∈ S ∧ f x = f a
 example (f : A → B) {a : A} {S : Set A} (h : a ∈ S) : f a ∈ f '' S :=
 by 
   exact ⟨a, h, rfl⟩
