@@ -177,20 +177,65 @@ We first define what it means for two lists to be permutations of each other.
 -/
 
 
-namespace NatList 
+
 
 /- 
 `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
   of each other. This is defined by induction using pairwise swaps. 
 -/
 
-inductive Permu : NatList → NatList → Prop 
-| nil : Permu [] []  
-| cons (n : ℕ) {l₁ l₂ : NatList} (h : Permu l₁ l₂) : Permu (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a] 
-| swap  (m n : ℕ) (l : NatList) : Permu (m :: n :: l) (n :: m :: l)
--- [a,b, c] ∼ [b,a, c]
+
+/-
+inductive Nat where
+  | zero : Nat
+  | succ (n : Nat) : Nat
+-/
+
+/-
+The Principle of induction for natural numbers (`Nat`) says that 
+∀ (P : ℕ → Prop), P (zero) → (∀ (n : Nat) P n → P (succ n) ) → ∀ n, P n
+
+Suppose our goal is to prove that the square of every odd number is odd
+
+-/
 
 
+#check Nat
+
+/-
+Nat.rec.{u} {motive : ℕ → Sort u} (zero : motive Nat.zero) (succ : (n : ℕ) → motive n → motive (Nat.succ n)) (t : ℕ) :
+  motive t
+-/
+#check Nat.rec
+
+inductive MyPerm : NatList → NatList → Prop 
+| nil : MyPerm [] []  
+| cons (n : ℕ) {l₁ l₂ : NatList} : MyPerm l₁ l₂ → MyPerm (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a] 
+| swap  (m n : ℕ) (l : NatList) : MyPerm (m :: n :: l) (n :: m :: l)
+-- [a,b, c] ∼ [b,a, c] ∼ [b,c,a] 
+
+/-
+MyPerm.rec {motive : (a a_1 : NatList) → MyPerm a a_1 → Prop} (nil : motive [] [] MyPerm.nil)
+  (cons :
+    ∀ (n : ℕ) {l₁ l₂ : NatList} (a : MyPerm l₁ l₂),
+      motive l₁ l₂ a → motive (n :: l₁) (n :: l₂) (_ : MyPerm (n :: l₁) (n :: l₂)))
+  (swap : ∀ (m n : ℕ) (l : NatList), motive (m :: n :: l) (n :: m :: l) (_ : MyPerm (m :: n :: l) (n :: m :: l)))
+  {a✝a✝¹ : NatList} (t : MyPerm a✝ a✝¹) : motive a✝ a✝¹ t
+-/
+#check MyPerm.rec
+
+
+/-
+- `MyPerm` is the smallest relation satisfying the inductive rules above, i.e. if `C` is  proposition depending on lists `l₁`, `l₂`, and the fact that `l₁ ∼ l₂` and furthermore satisfies the following rules 
+- `C [] []`  
+- `∀ (n : ℕ) {l₁ l₂ : NatList} (l₁ ∼ ), C l₁ l₂ → C (n :: l₁) (n :: l₂)`
+- `∀ (m n : ℕ) (l : NatList), C (m :: n :: l) (n :: m :: l)`
+Then `C` is true for all permutations of a list, that is `∀ (l₁ l₂ : NatList), MyPerm l₁ l₂ → C l₁ l₂`.
+-/
+
+#check MyPerm.rec
+
+open NatList 
 
 -- [a,b,c,d ] ∼(swap a b [c,d]) 
 -- [b,a,c,d] ∼ (cons b; swap a c [d]) 
@@ -204,31 +249,84 @@ inductive Permu : NatList → NatList → Prop
 -- l ∼ l
 
 
-infix :50 " ∼ " =>  Permu
+-- infix :50 " ∼ " =>  MyPerm
 
-#check [1,2] ∼ [2,1] 
-
-#check NatList
-
-theorem perm_refl : ∀ (l : NatList),  Permu l l  
-| [ ]  => Permu.nil 
-| (n :: l) => Permu.cons n (perm_refl l)
+-- #check [1,2] ∼ [2,1] 
 
 
-#check Permu.nil
 
 
-theorem perm_refl_alt : ∀ (l : NatList),  Permu l l := 
+theorem MyPerm.refl : ∀ (l : NatList),  MyPerm l l  
+| [ ]  => MyPerm.nil 
+| (n :: l) => MyPerm.cons n (MyPerm.refl l) -- n :: (m :: l') ∼ n :: (m :: l')
+
+
+#check MyPerm.nil
+
+
+theorem MyPerm.refl_alt : ∀ (l : NatList),  MyPerm l l := 
 by 
   intro l 
-  cases l with   
-  | nil => exact Permu.nil 
-  | cons n l => exact Permu.cons n (perm_refl l)
+  cases l with  
+  | nil => exact MyPerm.nil 
+  | cons n l => exact MyPerm.cons n (MyPerm.refl l)
+
+
+#check MyPerm.rec
 
 
 
 
+-- term-style proof 
+theorem MyPerm.symm {l l' : NatList} (h : MyPerm l l') : MyPerm l' l := 
+h.rec
+  (MyPerm.nil) 
+  (fun n l₁ l₂ h ih => MyPerm.cons n ih) -- l = n :: l₁ and l' = n :: l₂
+  (fun m n l => MyPerm.swap n m l) -- l = m :: n :: l and l' = n :: m :: l
 
 
-end NatList
+#check MyPerm.symm
+
+
+-- tactic-style proof 
+theorem MyPerm.symm_alt :  ∀ ⦃ l l' : NatList ⦄,  MyPerm l l' → MyPerm l' l := 
+by 
+  intro l l' h 
+  induction h with 
+  | nil => exact MyPerm.nil 
+  | cons n h ih => exact MyPerm.cons n ih 
+  | swap m n l => exact MyPerm.swap n m l  
+
+
+
+-- l= [] l' = []
+-- l = n :: l₁ and l' = m :: l₂  
+
+theorem MyPerm.of_eq (l l' : NatList) (h : l = l') : MyPerm l l' := 
+by 
+ rw [h]
+ exact MyPerm.refl l'
+
+
+def head_of 
+| [ ] => 0 
+| n :: l' => n
+
+#check @head_of
+
+
+example (l l' : NatList) (h : l = l') : head_of l = head_of l' := 
+by 
+  rw [h]
+
+
+
+-- good exercises for understanding induction on Permutation of Lists 
+theorem MyPerm.trans : ∀ ⦃l₁ l₂ l₃ : NatList⦄, MyPerm l₁ l₂ → MyPerm l₂ l₃ → MyPerm l₁ l₃ :=
+by 
+  intro l₁ l₂ l₃ h₁ h₂ 
+  induction h₁ with 
+  | nil => exact h₂
+  | cons n h ih => sorry -- l₁ = n :: l₁' and l₂ = n :: l₁'' and Perm l₁' l₁''   
+  | swap m n l => sorry -- l₁ = m :: n :: l₁' and l₂ = n :: m :: l₁' 
 
