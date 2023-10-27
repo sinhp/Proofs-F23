@@ -425,3 +425,6 @@ by
 example (l₁ l₂ : List ℕ) : List.Perm l₁ l₂ → length l₁ = length l₂ :=
 by
   sorry
+
+
+#check Multiset
