@@ -198,7 +198,7 @@ def erase : ℕ → NatList → NatList
 
 
 -- three layers of induction
--- MyPerm -- nil, cons, swap
+-- MyPerm' -- nil, cons, swap
 -- NatList -- two constructors [], (n :: l)
 -- ℕ -- two constructors zero, succ (n)
 
@@ -260,41 +260,39 @@ Nat.rec.{u} {motive : ℕ → Sort u} (zero : motive Nat.zero) (succ : (n : ℕ)
 -/
 #check Nat.rec
 
-inductive MyPerm : NatList → NatList → Prop
-| nil : MyPerm [] []
-| cons (n : ℕ) {l₁ l₂ : NatList} : MyPerm l₁ l₂ → MyPerm (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a]
-| swap  (m n : ℕ) (l : NatList) : MyPerm (m :: n :: l) (n :: m :: l)
+inductive MyPerm' : NatList → NatList → Prop
+| nil : MyPerm' [] []
+| cons (n : ℕ) {l₁ l₂ : NatList} : MyPerm' l₁ l₂ → MyPerm' (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a]
+| swap  (m n : ℕ) (l : NatList) : MyPerm' (m :: n :: l) (n :: m :: l)
 
 
-example : MyPerm [2,3] [3,2] :=
-MyPerm.swap 2 3 []
+example : MyPerm' [2,3] [3,2] :=
+MyPerm'.swap 2 3 []
 
-lemma perm₁ : MyPerm [1,2,3] [1,3,2] :=
-MyPerm.cons 1 (MyPerm.swap 2 3 [])
+lemma perm₁ : MyPerm' [1,2,3] [1,3,2] :=
+MyPerm'.cons 1 (MyPerm'.swap 2 3 [])
 
-lemma perm₂ : MyPerm [1,3,2] [3,1,2] :=
-MyPerm.swap 1 3 [2]
+lemma perm₂ : MyPerm' [1,3,2] [3,1,2] :=
+MyPerm'.swap 1 3 [2]
 
-lemma perm₃ :  ¬ MyPerm [1,2,3] [3,1,2] :=
+/- MyPerm' does not provide a good notion of permutation because this notion of pemutation is not transitive.
+As a result the following two lists which are in permutation are not under the relation ` MyPerm' `.
+ -/
+lemma perm₃ :  ¬ MyPerm' [1,2,3] [3,1,2] :=
 by
   intro h
   contradiction
 
-open List
-lemma perm₄ : Perm [1,2,3] [3,1,2] :=
-by
-  apply Perm.trans (l₂ := [1,3,2])
-  · sorry
-  · sorry
+
 
 -- defining permutations based on transpositions instead of swaps of the first two elements. This is a more natural definition of permutations.
 def transposition (m n : ℕ) (l : List ℕ) ( h : (m ∈ l) ∧ (n ∈ l)): List ℕ :=
 sorry
 
-theorem transpose_perm (m n : ℕ) (l : List ℕ) ( h : (m ∈ l) ∧ (n ∈ l)) : Perm l (transposition m n l h) :=
-sorry
+-- theorem transpose_perm (m n : ℕ) (l : List ℕ) ( h : (m ∈ l) ∧ (n ∈ l)) : Perm l (transposition m n l h) :=
+-- sorry
 
--- [a,b,c] ∼ (MyPerm.cons 1 (MyPerm.swap 2 3 []))
+-- [a,b,c] ∼ (MyPerm'.cons 1 (MyPerm'.swap 2 3 []))
 -- [a,c,b] ∼
 -- [c,a,b]
 
@@ -312,119 +310,310 @@ sorry
 
 
 /-
-MyPerm.rec {motive : (a a_1 : NatList) → MyPerm a a_1 → Prop} (nil : motive [] [] MyPerm.nil)
+MyPerm'.rec {motive : (a a_1 : NatList) → MyPerm' a a_1 → Prop} (nil : motive [] [] MyPerm'.nil)
   (cons :
-    ∀ (n : ℕ) {l₁ l₂ : NatList} (a : MyPerm l₁ l₂),
-      motive l₁ l₂ a → motive (n :: l₁) (n :: l₂) (_ : MyPerm (n :: l₁) (n :: l₂)))
-  (swap : ∀ (m n : ℕ) (l : NatList), motive (m :: n :: l) (n :: m :: l) (_ : MyPerm (m :: n :: l) (n :: m :: l)))
-  {a✝a✝¹ : NatList} (t : MyPerm a✝ a✝¹) : motive a✝ a✝¹ t
+    ∀ (n : ℕ) {l₁ l₂ : NatList} (a : MyPerm' l₁ l₂),
+      motive l₁ l₂ a → motive (n :: l₁) (n :: l₂) (_ : MyPerm' (n :: l₁) (n :: l₂)))
+  (swap : ∀ (m n : ℕ) (l : NatList), motive (m :: n :: l) (n :: m :: l) (_ : MyPerm' (m :: n :: l) (n :: m :: l)))
+  {a✝a✝¹ : NatList} (t : MyPerm' a✝ a✝¹) : motive a✝ a✝¹ t
 -/
-#check MyPerm.rec
+#check MyPerm'.rec
 
 
 /-
-- `MyPerm` is the smallest relation satisfying the inductive rules above, i.e. if `C` is  proposition depending on lists `l₁`, `l₂`, and the fact that `l₁ ∼ l₂` and furthermore satisfies the following rules
+- `MyPerm'` is the smallest relation satisfying the inductive rules above, i.e. if `C` is  proposition depending on lists `l₁`, `l₂`, and the fact that `l₁ ∼ l₂` and furthermore satisfies the following rules
 - `C [] []`
 - `∀ (n : ℕ) {l₁ l₂ : NatList} (l₁ ∼ ), C l₁ l₂ → C (n :: l₁) (n :: l₂)`
 - `∀ (m n : ℕ) (l : NatList), C (m :: n :: l) (n :: m :: l)`
-Then `C` is true for all permutations of a list, that is `∀ (l₁ l₂ : NatList), MyPerm l₁ l₂ → C l₁ l₂`.
+Then `C` is true for all permutations of a list, that is `∀ (l₁ l₂ : NatList), MyPerm' l₁ l₂ → C l₁ l₂`.
 -/
 
-#check MyPerm.rec
+#check MyPerm'.rec
 
 open NatList
 
 
 
 
--- infix :50 " ∼ " =>  MyPerm
+-- infix :50 " ∼ " =>  MyPerm'
 
 -- #check [1,2] ∼ [2,1]
 
 
 
 
-theorem MyPerm.refl : ∀ (l : NatList),  MyPerm l l
-| [ ]  => MyPerm.nil
-| (n :: l) => MyPerm.cons n (MyPerm.refl l) -- n :: (m :: l') ∼ n :: (m :: l')
+theorem MyPerm'.refl : ∀ (l : NatList),  MyPerm' l l
+| [ ]  => MyPerm'.nil
+| (n :: l) => MyPerm'.cons n (MyPerm'.refl l) -- n :: (m :: l') ∼ n :: (m :: l')
 
 
-#check MyPerm.nil
+#check MyPerm'.nil
 
 
-theorem MyPerm.refl_alt : ∀ (l : NatList),  MyPerm l l :=
+theorem MyPerm'.refl_alt : ∀ (l : NatList),  MyPerm' l l :=
 by
   intro l
   cases l with
-  | nil => exact MyPerm.nil
-  | cons n l => exact MyPerm.cons n (MyPerm.refl l)
+  | nil => exact MyPerm'.nil
+  | cons n l => exact MyPerm'.cons n (MyPerm'.refl l)
 
 
-#check MyPerm.rec
+#check MyPerm'.rec
 
 
 
 
 -- term-style proof
-theorem MyPerm.symm {l l' : NatList} (h : MyPerm l l') : MyPerm l' l :=
+theorem MyPerm'.symm {l l' : NatList} (h : MyPerm' l l') : MyPerm' l' l :=
 h.rec
-  (MyPerm.nil)
-  (fun n l₁ l₂ h ih => MyPerm.cons n ih) -- l = n :: l₁ and l' = n :: l₂
-  (fun m n l => MyPerm.swap n m l) -- l = m :: n :: l and l' = n :: m :: l
+  (MyPerm'.nil)
+  (fun n l₁ l₂ h ih => MyPerm'.cons n ih) -- l = n :: l₁ and l' = n :: l₂
+  (fun m n l => MyPerm'.swap n m l) -- l = m :: n :: l and l' = n :: m :: l
 
 
-#check MyPerm.symm
+#check MyPerm'.symm
 
 
 -- tactic-style proof
-theorem MyPerm.symm_alt :  ∀ ⦃ l l' : NatList ⦄,  MyPerm l l' → MyPerm l' l :=
+theorem MyPerm'.symm_alt :  ∀ ⦃ l l' : NatList ⦄,  MyPerm' l l' → MyPerm' l' l :=
 by
   intro l l' h
   induction h with
-  | nil => exact MyPerm.nil
-  | cons n h ih => exact MyPerm.cons n ih
-  | swap m n l => exact MyPerm.swap n m l
+  | nil => exact MyPerm'.nil
+  | cons n h ih => exact MyPerm'.cons n ih
+  | swap m n l => exact MyPerm'.swap n m l
 
 
 
 -- l= [] l' = []
 -- l = n :: l₁ and l' = m :: l₂
 
-theorem MyPerm.of_eq (l l' : NatList) (h : l = l') : MyPerm l l' :=
+theorem MyPerm'.of_eq (l l' : NatList) (h : l = l') : MyPerm' l l' :=
 by
  rw [h]
- exact MyPerm.refl l'
+ exact MyPerm'.refl l'
 
 
 def head_of : NatList → ℕ
 | [ ] => 0
 | n :: l' => n
 
-#check @head_of
 
 
-example (l l' : NatList) (h : l = l') : head_of l = head_of l' :=
+
+#check @NatList.head_of
+
+
+example (l l' : NatList) (h : l = l') : NatList.head_of l = NatList.head_of l' :=
 by
   rw [h]
 
 
 
 -- good exercises for understanding induction on Permutation of Lists
-theorem MyPerm.not_trans : ¬ (∀ ⦃l₁ l₂ l₃ : NatList⦄, MyPerm l₁ l₂ → MyPerm l₂ l₃ → MyPerm l₁ l₃) :=
+theorem MyPerm'.not_trans : ¬ (∀ ⦃l₁ l₂ l₃ : NatList⦄, MyPerm' l₁ l₂ → MyPerm' l₂ l₃ → MyPerm' l₁ l₃) :=
 by
   push_neg
   use [1,2,3], [1,3,2], [3,1,2]
   exact ⟨perm₁, perm₂, perm₃⟩
 
 
--- Therefore MyPerm is not a good specification/definition for the idea of permutation.
+-- Therefore MyPerm' is not a good specification/definition for the idea of permutation.
 
 #check List.Perm
 
 
-example (l₁ l₂ : List ℕ) : List.Perm l₁ l₂ → length l₁ = length l₂ :=
+example (l₁ l₂ : List ℕ) : List.Perm l₁ l₂ → List.length l₁ = List.length l₂ :=
+by
+  sorry
+
+open List
+
+#check Perm
+#check Perm.nil
+#check Perm.cons
+#check Perm.swap
+#check Perm.trans
+
+
+lemma perm₄ : Perm [1,2,3] [3,1,2] :=
+by
+  apply Perm.trans (l₂ := [1,3,2])
+  · exact Perm.cons 1 (Perm.swap 3 2 [])
+  · exact Perm.swap 3 1 [2]
+
+
+/-
+## Multisets : Quotients of lists up to permutations
+-/
+
+
+/-
+RECALL:
+
+1. A __binary relation__ on a type `X` is a two-variable predicate `R : X → X → Prop`, that is, a proposition `R x y` attached to each pair of elements of `X`. -- `R x y` says whether `x` is related to `y` via `R`
+
+In mathematics, we often use __infix notation__, writing  `a R b` instead of `R a b`, e.g. `a = b`, `a ≤  b`, etc. Equality an inequality are relations.
+
+2. A __reflexive relation__ on a type `X` is a binary relation `R : X → X → Prop` such that `R x x` is true for every `x : X`.
+
+3. A __symmetric relation__ on a type `X` is a binary relation `R : X → X → Prop` such that `R x y → R y x` for every `x y : X`.
+
+4. A __transitive relation__ on a type `X` is a binary relation `R : X → X → Prop` such that `R x y → R y z → R x z` for every `x y z : X`.
+
+5. An __equivalence relation__ on a type `X` is a binary relation `R : X → X → Prop` that is reflexive, symmetric, and transitive.
+-/
+
+/- ## Example of Equivalence Relation -/
+
+def divides (m n : ℤ) := ∃ k : ℤ, n = m * k -- `n` is a multiple of `m`, or in other words `m` divides `n`
+
+example : divides 2 4 :=
+by
+  simp only [divides]
+  use 2
+  rfl
+
+#check @divides
+
+-- `divides` (divisibility relation) is reflexive
+lemma divides_refl : ∀ n : ℤ, divides n n :=
+by
+  simp only [divides]
+  intro n
+  use 1
+  rw [mul_one]
+
+
+-- `divides` (divisibility relation) is not symmetric
+
+example : ¬ (∀ {m n : ℤ}, divides m n → divides n m) :=
+by
+  push_neg
+  use 2, 4
+  constructor
+  · simp only [divides]
+    use 2
+    rfl
+  · intro h
+    simp only [divides] at h
+    obtain ⟨k, hk⟩ := h
+    -- linarith
+    sorry
+
+-- `divides` (divisibility relation) is transitive?
+lemma divides_transitive :  ∀ {m₁ m₂ m₃ : ℤ}, divides m₁ m₂ → divides m₂ m₃ → divides m₁ m₃ :=
+by
+  intro m₁ m₂ m₃ h₁ h₂
+  simp only [divides] at *
+  obtain ⟨k₁, hk₁ ⟩ := h₁
+  obtain ⟨k₂, hk₂ ⟩ := h₂
+  use k₁ * k₂
+  rw [← mul_assoc]
+  --  rw [← hk₁]
+  -- assumption
+  rw [hk₂]
+  rw [hk₁]
+
+
+
+/-- Modular Congruence: Two integers are congruent modulo `n`, if their difference is a multiple of `n`. -/
+--@[simp]
+def mod_cong (n a b : ℤ) : Prop := divides n (a - b)
+
+
+notation:50  a " ≡ " b " [mod " n "]" => mod_cong n a b
+
+example : mod_cong 12 (11+2) 1 :=
 by
   sorry
 
 
+example : 11 + 2 ≡ 1 [mod 12] :=
+by
+  -- Want to prove that 12 divides  (11 + 2) - 1
+  use 1
+  ring
+
+
+-- the relation of modular congruence is an equivalence relation on integers
+
+
+theorem mod_refl : ∀ x, x ≡ x [mod n] :=
+by
+  intro x
+  -- `n` divides `x - x`
+  use 0
+  ring
+
+
+theorem mod_symm {n : ℤ} : x ≡ y [mod n] →  y ≡ x [mod n] :=
+by
+  intro h
+  -- `h` states that n divides x - y
+  simp only [ mod_cong, divides ] at h
+  obtain ⟨k, hk ⟩ := h
+  use (-k)
+  linarith [hk]
+
+
+theorem divides_sum (a b c : ℤ) :
+  a ∣ b → a ∣ c → a ∣ b + c :=
+by
+  intro h₁ h₂
+  sorry
+
+<<<<<<< HEAD
+
 #check Multiset
+=======
+theorem mod_trans {n : ℤ} : x ≡ y [mod n] → y ≡ z [mod n] →  x ≡ z [mod n] :=
+by
+  intro h₁ h₂
+  have : n ∣ (x - y) + (y - z)  := divides_sum _ _ _ h₁ h₂
+  simpa using this
+
+#check Equivalence
+
+theorem mod_equiv : ∀ n : ℤ, Equivalence (mod_cong n) :=
+by
+  intro n
+  exact ⟨mod_refl, mod_symm, mod_trans⟩
+
+
+
+
+
+
+inductive MyPerm : NatList → NatList → Prop
+| nil : MyPerm [] []
+| cons (n : ℕ) {l₁ l₂ : NatList} : MyPerm l₁ l₂ → MyPerm (n :: l₁) (n :: l₂) -- n :: l₁ , n :: l₂ are permutation of each other if `l₁` and `l₂` are already permutation of each other. using this rule we can prove [c, a, b] ∼ [c, b, a]
+| swap  (m n : ℕ) (l : NatList) : MyPerm (m :: n :: l) (n :: m :: l)
+| trans {l₁ l₂ l₃ : NatList} : MyPerm l₁ l₂ → MyPerm l₂ l₃ → MyPerm l₁ l₃
+
+
+/- A good notion of permutation has to be an equivalence relation and we prove this for MyPerm. -/
+
+
+theorem MyPerm_refl : ∀ (l : NatList),  MyPerm l l :=
+by
+  intro l
+  -- we want to prove that `l` is a permutation of itself
+  cases l with
+  | nil => exact MyPerm.nil -- the case when `l = []`
+  | cons n l' => exact MyPerm.cons n (MyPerm_refl l')-- the case when ` l = n :: l' ` and the goal `MyPerm l l` becomes `MyPerm (n :: l') (n :: l')`
+
+
+theorem MyPerm_symm :  ∀ { l l' : NatList },  MyPerm l l' → MyPerm l' l :=
+by
+  sorry
+
+theorem MyPerm_trans : ∀ {l₁ l₂ l₃ : NatList}, MyPerm l₁ l₂ → MyPerm l₂ l₃ → MyPerm l₁ l₃ :=
+by
+  exact MyPerm.trans
+
+
+theorem MyPerm_equiv : Equivalence MyPerm :=
+by
+  exact ⟨MyPerm_refl, MyPerm_symm, MyPerm_trans⟩
+>>>>>>> 5d6171202245010ece18435a283fd1d4e8e5f4c7
