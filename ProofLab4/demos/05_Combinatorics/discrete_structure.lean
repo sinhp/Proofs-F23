@@ -563,10 +563,6 @@ by
   intro h₁ h₂
   sorry
 
-<<<<<<< HEAD
-
-#check Multiset
-=======
 theorem mod_trans {n : ℤ} : x ≡ y [mod n] → y ≡ z [mod n] →  x ≡ z [mod n] :=
 by
   intro h₁ h₂
@@ -580,6 +576,105 @@ by
   intro n
   exact ⟨mod_refl, mod_symm, mod_trans⟩
 
+
+
+
+
+#check Setoid -- Setoid takes a type `X` and returns the type of setoid structures on `X`. A setoid structure on `X` is an equivalence relation on `X`.
+
+
+#print Setoid
+
+
+-- an instance of setoid on the type of integers.
+@[simp]
+instance mod_cong_setoid (n : ℤ) : Setoid ℤ where
+  r := mod_cong n
+  iseqv := mod_equiv n
+
+#check @mod_cong_setoid
+
+/- for every integer n, `mod_cong_setoid n` provides a setoid structure on ℤ which is the congruence by `n`. -/
+
+#check mod_cong_setoid 4
+
+#check Quotient
+
+-- ℤ/n
+def CMod (n : ℤ ) := Quotient (mod_cong_setoid n)
+
+-- what are the elements of CMod n?
+
+#check Quotient.mk
+
+#check Quotient.mk (mod_cong_setoid 4) 2 -- ⟦ 2 ⟧ : CMod 4
+
+#check ⟦ 2 ⟧ -- what is the type of ⟦ 2 ⟧.
+-- ⟦ 2⟧ lives in many types, it lives in CMod 4 but also in CMod3 "="" { ⟦ 0 ⟧, ⟦ 1 ⟧, ⟦ 2 ⟧ },
+-- CMod 4 = { ⟦ 0 ⟧, ⟦ 1 ⟧, ⟦ 2 ⟧, ⟦ 3 ⟧}
+
+
+#check ([] : List ℕ)
+
+#check (⟦ 2 ⟧ : CMod 4)
+
+
+#check Quotient.sound
+
+example : (⟦ 2 ⟧ : CMod 4) = ⟦ 6 ⟧ :=
+by
+  apply Quotient.sound
+  simp only [Setoid.r]
+  -- the goal is to prove 4 ∣ 2 - 6
+  -- ∃ k, 2 - 6 = 4 k
+  use -1
+  ring
+
+example : ∀ n : ℤ, (⟦ n ⟧ : CMod 4) = ⟦ n + 4 ⟧  :=
+by
+  intro n
+  apply Quotient.sound
+  simp only [Setoid.r]
+  -- the goal is to prove 4 ∣ 2 - 6
+  -- ∃ k, 2 - 6 = 4 k
+  use -1
+  ring
+
+
+example : ∀ n : ℤ,
+( ⟦ n ⟧ : CMod 4) = ⟦ n - 4 ⟧  :=
+by
+  intro n
+  apply Quotient.sound
+  simp only [Setoid.r]
+  -- the goal is to prove 4 ∣ 2 - 6
+  -- ∃ k, 2 - 6 = 4 k
+  use 1
+  ring
+
+
+/-
+Want to equipp the type of CMod n with a group structure
+-/
+-- ⟦ 4 ⟧ + ⟦ 5 ⟧ = ⟦ 1 ⟧  in CMod
+
+instance (n : ℤ) : AddGroup (CMod n) where
+  add := _
+  add_assoc := _
+  zero := _
+  zero_add := _
+  add_zero := _
+  nsmul := _
+  nsmul_zero := _
+  nsmul_succ := _
+  neg := _
+  sub := _
+  sub_eq_add_neg := _
+  zsmul := _
+  zsmul_zero' := _
+  zsmul_succ' := _
+  zsmul_neg' := _
+  add_left_neg := _
 
 
 
@@ -616,4 +711,3 @@ by
 theorem MyPerm_equiv : Equivalence MyPerm :=
 by
   exact ⟨MyPerm_refl, MyPerm_symm, MyPerm_trans⟩
->>>>>>> 5d6171202245010ece18435a283fd1d4e8e5f4c7
