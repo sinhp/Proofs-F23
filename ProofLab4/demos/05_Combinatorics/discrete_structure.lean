@@ -1,4 +1,3 @@
-
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Basic
@@ -518,7 +517,7 @@ by
 
 
 /-- Modular Congruence: Two integers are congruent modulo `n`, if their difference is a multiple of `n`. -/
---@[simp]
+@[simp]
 def mod_cong (n a b : ℤ) : Prop := divides n (a - b)
 
 
@@ -579,102 +578,292 @@ by
 
 
 
-
-#check Setoid -- Setoid takes a type `X` and returns the type of setoid structures on `X`. A setoid structure on `X` is an equivalence relation on `X`.
-
-
-#print Setoid
+/- A setoid is a type equipped with an equivalence relation. -/
+#check Setoid
 
 
--- an instance of setoid on the type of integers.
-@[simp]
-instance mod_cong_setoid (n : ℤ) : Setoid ℤ where
-  r := mod_cong n
+/-
+Let's give the type of integers the structure of a setoid using modular congruence.
+-/
+
+
+-- @[simp]
+-- instance mod_cong_equiv (n : ℤ) : HasEquiv ℤ where
+--   Equiv := mod_cong n
+
+-- We define a constant family of types such that for each index `n` the family returns the type `ℤ`. We do this so that we have an instance of the type class `Setoid ℤ` works for every integer `n`.
+
+
+-- def Z (n : ℤ) : Type := ℤ
+-- seems `abbrev` is better-suited than `def` since it also carries the instances of the type classes (e.g. ` OfNat` ) defined on `ℤ` to `Z n`, whereas `def` does not.
+abbrev Z (n : ℤ) := ℤ
+
+#check OfNat
+
+
+
+
+
+instance mod_cong_setoid (n : ℤ) : Setoid (Z n) :=
+{
+  r := mod_cong n,
   iseqv := mod_equiv n
+}
 
-#check @mod_cong_setoid
+#check (mod_cong_setoid 3)
+#check (mod_cong_setoid 3).r
 
-/- for every integer n, `mod_cong_setoid n` provides a setoid structure on ℤ which is the congruence by `n`. -/
 
-#check mod_cong_setoid 4
+/-
+Constructing the cylic group of order n using the quotient of the modular congruence
+-/
 
+-- from Init.Core
 #check Quotient
 
--- ℤ/n
-def CMod (n : ℤ ) := Quotient (mod_cong_setoid n)
+@[simp]
+def CMod (n : ℤ) := Quotient (mod_cong_setoid n)
 
--- what are the elements of CMod n?
+#check CMod
 
+
+
+
+
+
+#check Quot.mk
 #check Quotient.mk
 
-#check Quotient.mk (mod_cong_setoid 4) 2 -- ⟦ 2 ⟧ : CMod 4
 
-#check ⟦ 2 ⟧ -- what is the type of ⟦ 2 ⟧.
--- ⟦ 2⟧ lives in many types, it lives in CMod 4 but also in CMod3 "="" { ⟦ 0 ⟧, ⟦ 1 ⟧, ⟦ 2 ⟧ },
--- CMod 4 = { ⟦ 0 ⟧, ⟦ 1 ⟧, ⟦ 2 ⟧, ⟦ 3 ⟧}
-
-
-#check ([] : List ℕ)
-
-#check (⟦ 2 ⟧ : CMod 4)
-
-
+#check Quot.sound
 #check Quotient.sound
 
-example : (⟦ 2 ⟧ : CMod 4) = ⟦ 6 ⟧ :=
-by
-  apply Quotient.sound
-  simp only [Setoid.r]
-  -- the goal is to prove 4 ∣ 2 - 6
-  -- ∃ k, 2 - 6 = 4 k
-  use -1
-  ring
 
-example : ∀ n : ℤ, (⟦ n ⟧ : CMod 4) = ⟦ n + 4 ⟧  :=
+#check (⟦ 3 ⟧ : CMod 4)
+
+#check CMod
+
+#reduce (CMod 4)
+
+
+example : (⟦ 3 ⟧ : CMod 4) = (⟦ 7 ⟧ : CMod 4) :=
 by
-  intro n
   apply Quotient.sound
-  simp only [Setoid.r]
-  -- the goal is to prove 4 ∣ 2 - 6
-  -- ∃ k, 2 - 6 = 4 k
+  simp only [CMod]
   use -1
   ring
 
 
-example : ∀ n : ℤ,
-( ⟦ n ⟧ : CMod 4) = ⟦ n - 4 ⟧  :=
+example : ∀ n : ℤ, (⟦ n ⟧ : CMod 4) = (⟦ (n + 4) ⟧ : CMod 4) :=
 by
   intro n
   apply Quotient.sound
   simp only [Setoid.r]
-  -- the goal is to prove 4 ∣ 2 - 6
-  -- ∃ k, 2 - 6 = 4 k
+  use -1
+  ring
+
+
+example : ∀ n : ℤ, (⟦ n ⟧ : CMod 4) = (⟦ (n - 4) ⟧ : CMod 4) :=
+by
+  intro n
+  apply Quotient.sound
+  simp only [Setoid.r]
   use 1
   ring
 
 
-/-
-Want to equipp the type of CMod n with a group structure
--/
--- ⟦ 4 ⟧ + ⟦ 5 ⟧ = ⟦ 1 ⟧  in CMod
+#check Quotient.lift -- : {α : Sort u} {β : Sort v} {s : Setoid α} (f : α → β) (a✝ : ∀ (a b : α), a ≈ b → f a = f b)(a✝¹ : Quotient s) : β
+#check Quotient.liftOn
 
-instance (n : ℤ) : AddGroup (CMod n) where
-  add := _
-  add_assoc := _
+#check mod_cong
+
+lemma mod_cong_zero : ∀ a b : Z 0,  a ≈  b →  a = b :=
+by
+  intro a b
+  · intro h
+    obtain ⟨k, hk⟩ := h
+    linarith [hk]
+
+
+#check Quotient.lift
+
+/- The compostion of `Quotient.lift` and `Quotient.mk` is the identity function. -/
+
+example (X : Sort u) (Y : Sort v) (f : X → Y)  (s : Setoid X) (h : ∀ (a b : X), a ≈ b → f a = f b) (x : X) : Quotient.lift f h (Quotient.mk s x) = f x :=
+by
+  rfl
+
+
+#check Quotient.exists_rep
+
+example : CMod 0 ≃ ℤ where
+  toFun := Quotient.lift (fun n => n) (mod_cong_zero)
+  invFun := Quotient.mk (mod_cong_setoid 0)
+  left_inv := by simp only [Function.LeftInverse]; intro x; cases' (Quotient.exists_rep x) with w h; rw [← h]; rfl
+  right_inv := by simp only [Function.RightInverse]; intro x; rfl
+
+
+example : CMod 1 ≃ Unit where
+  toFun := Quotient.lift (fun n => ()) (fun a b h => by trivial)
+  invFun := fun _ => ⟦ 0 ⟧
+  left_inv := by simp only [Function.LeftInverse]; intro x; cases' (Quotient.exists_rep x) with w h; rw [← h]; apply Quotient.sound; use -w ; ring
+  right_inv := by simp only [Function.RightInverse]
+
+#check Fin
+
+
+
+example (a b c  : ℤ) (h : a - b  = c) : a = c + b :=
+add_eq_of_eq_add_neg h.symm |> .symm
+
+example : CMod 2 ≃ Bool where
+  toFun := Quotient.lift (fun n =>
+                                  n % 2 = 0)
+                         (fun a b h =>
+                                      by
+                                        obtain ⟨k, hk⟩ := h
+                                        have : a = 2 * k + b := add_eq_of_eq_add_neg hk.symm |> .symm
+                                        rw [this]
+                                          )
+  invFun := fun b =>
+                   if b then ⟦ 0 ⟧ else ⟦ 1 ⟧
+  left_inv := by simp only [Function.LeftInverse]; intro x; cases' (Quotient.exists_rep x) with w h; rw [← h]; apply Quotient.sound; use -w ; ring
+  right_inv := by simp only [Function.RightInverse]; intro x; cases' x with w h; simp only [if_true, if_false]; cases' w with w; simp only [if_true, if_false]; apply Quotient.sound; use -w ; ring
+
+
+#check add_eq_of_eq_add_neg
+#check add_neg_eq_of_eq_add
+#check Eq.symm
+
+
+
+
+
+
+
+
+#check AddMonoid
+
+/- We want to define a function `add` on `CMod n` that adds two elements of `CMod n` and returns an element of `CMod n`. -/
+
+@[simp]
+def CMod.add_aux (n : ℤ) : Z n → Z n → CMod n := fun x y => ⟦ x + y ⟧
+
+-- We want to prove that `add_aux` is well-defined, i.e. if `m ≈ m'` and `n ≈ n'` then `m + n ≈ m' + n'`
+@[simp]
+lemma add_aux_resp_cong (n : ℤ) : ∀ (a b a' b': Z n) ,  a ≈ a' →  b ≈ b' →  (⟦ a + b ⟧ : CMod n)  = ⟦ a' + b' ⟧ :=
+by
+  intro a b a' b' h₁ h₂
+  apply Quotient.sound
+  obtain ⟨k₁, hk₁⟩ := h₁
+  obtain ⟨k₂, hk₂⟩ := h₂
+  use k₁ + k₂
+  linarith [hk₁, hk₂]
+
+
+#check Quotient.lift --: (f : α → β) (h : ∀ (a b : α), a ≈ b → f a = f b) (q : Quotient s) : β
+
+#check Quotient.lift₂ --: (f : α → β → φ) (h : ∀ (a₁ : α) (b₁ : β) (a₂ : α) (b₂ : β), a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂) (q₁ : Quotient s₁) (q₂ : Quotient s₂) : φ
+
+
+section
+variable (n : ℤ)
+#check Quotient.lift₂ (CMod.add_aux n) (add_aux_resp_cong n) -- : Quotient (mod_cong_setoid n) → Quotient (mod_cong_setoid n) → CMod n
+end
+
+
+#check Quotient.ind -- :  (a✝ : ∀ (a : α), motive (Quotient.mk s a)) (q : Quotient s) : motive q
+                    -- if we know a unary property holds for all the representatives of the equivalence classes, then it holds for all the elements of the quotient type.
+
+#check Quotient.inductionOn
+
+#check Quotient.ind₂ -- : (h : ∀ (a : α) (b : β), motive (Quotient.mk s₁ a) (Quotient.mk s₂ b)) (q₁ : Quotient s₁) (q₂ : Quotient s₂) : motive q₁ q₂
+                     -- if we know a binary property holds for all the representatives of the equivalence classes, then it holds for all the elements of the quotient type.
+
+#check Quotient.ind
+
+#check Quotient.inductionOn₃
+
+
+
+
+#check Add
+
+#check HAdd
+
+
+#print HAdd
+
+
+
+
+
+instance mod_cong_add (n : ℤ) : Add (CMod n) where
+  add := Quotient.lift₂ (CMod.add_aux n) (add_aux_resp_cong n)
+
+#check  CMod 4
+
+#check (⟦ 2 ⟧ : CMod 4)
+
+#check mod_cong_add 4
+
+#check Add.add (⟦ 2 ⟧ : CMod 4) (⟦ 3 ⟧ : CMod 4)
+
+
+
+lemma add_assoc_aux (n : ℤ) : ∀ (a b c : Z n), (( (⟦ a ⟧ : CMod n) + ⟦ b ⟧) + ⟦ c ⟧) = ( ⟦ a ⟧  + (⟦ b ⟧ + (⟦ c ⟧ : CMod n) )) :=
+by
+  intro a b c
+  apply Quotient.inductionOn₃ a b c
+  intro a b c
+  simp only [CMod.add_aux]
+  rw [add_assoc]
+  rfl
+
+
+
+@[simps!]
+instance mod_cong_add_monoid (n : ℤ) : AddMonoid (CMod n) where
+  add := Quotient.lift₂ (CMod.add_aux n) (add_aux_resp_cong n)
+  add_assoc := by intro a b c; apply Quotient.inductionOn₃;
+  --simp; apply Quotient.inductionOn₃ a b c;
   zero := _
   zero_add := _
   add_zero := _
   nsmul := _
   nsmul_zero := _
   nsmul_succ := _
-  neg := _
-  sub := _
-  sub_eq_add_neg := _
-  zsmul := _
-  zsmul_zero' := _
-  zsmul_succ' := _
-  zsmul_neg' := _
-  add_left_neg := _
+
+
+#check SubNegMonoid
+
+
+#check Group
+#check AddGroup
+
+instance mod_cong_group  {n : ℤ} : Group (CMod n) where
+  mul q q' := Quotient.liftOn₂ q q' (λ a b => ⟦ a * b ⟧) (λ a₁ a₂ b₁ b₂ h₁ h₂ => Quot.sound (by
+    simp only [Setoid.r] at *
+    use (a₁ * b₁) - (a₂ * b₂)
+    ring))
+  mul_assoc := _
+  one := _
+  one_mul := _
+  mul_one := _
+  npow := _
+  npow_zero := _
+  npow_succ := _
+  inv := _
+  div := _
+  div_eq_mul_inv := _
+  zpow := _
+  zpow_zero' := _
+  zpow_succ' := _
+  zpow_neg' := _
+  mul_left_inv := _
+
+
+
 
 
 
@@ -699,6 +888,7 @@ by
   | cons n l' => exact MyPerm.cons n (MyPerm_refl l')-- the case when ` l = n :: l' ` and the goal `MyPerm l l` becomes `MyPerm (n :: l') (n :: l')`
 
 
+so this is a nice p
 theorem MyPerm_symm :  ∀ { l l' : NatList },  MyPerm l l' → MyPerm l' l :=
 by
   sorry
